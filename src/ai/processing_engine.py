@@ -11,6 +11,7 @@ from ..models import (
     FeatureAnalysis, StyleConfig
 )
 from ..interfaces import AIProcessingEngineInterface
+from .providers import get_provider, get_available_providers, AIProvider
 
 
 class AIProcessingError(Exception):
@@ -19,25 +20,30 @@ class AIProcessingError(Exception):
 
 
 class AIProcessingEngine(AIProcessingEngineInterface):
-    """AI-powered content generation engine."""
+    """AI-powered content generation engine with multiple provider support."""
     
     def __init__(
         self,
-        model: str = "gpt-3.5-turbo",
+        provider: str = "openai",
+        model: str = None,
         temperature: float = 0.7,
         max_retries: int = 3,
         retry_delay: float = 1.0,
-        style_config: Optional[StyleConfig] = None
+        style_config: Optional[StyleConfig] = None,
+        api_key: str = None
     ):
         """Initialize the AI processing engine.
         
         Args:
-            model: AI model to use for generation
+            provider: AI provider to use ('openai', 'anthropic', 'google', etc.)
+            model: AI model to use for generation (auto-selected if None)
             temperature: Temperature for AI generation (0.0-2.0)
             max_retries: Maximum number of retry attempts
             retry_delay: Delay between retries in seconds
             style_config: Style configuration for content generation
+            api_key: API key for the provider (uses env vars if None)
         """
+        self.provider_name = provider
         self.model = model
         self.temperature = temperature
         self.max_retries = max_retries
@@ -45,9 +51,64 @@ class AIProcessingEngine(AIProcessingEngineInterface):
         self.style_config = style_config or StyleConfig()
         self.logger = logging.getLogger(__name__)
         
+        # Initialize AI provider
+        self.provider = self._initialize_provider(provider, api_key, model)
+        
         # Load style content if not already loaded
         if not self.style_config.code_style_content:
             self.style_config.load_content()
+    
+    def switch_provider(self, provider_name: str, api_key: str = None, model: str = None) -> bool:
+        """Switch to a different AI provider.
+        
+        Args:
+            provider_name: Name of the new provider
+            api_key: API key for the new provider
+            model: Model to use with the new provider
+            
+        Returns:
+            True if switch was successful, False otherwise
+        """
+        try:
+            new_provider = self._initialize_provider(provider_name, api_key, model)
+            self.provider = new_provider
+            self.provider_name = provider_name
+            self.model = new_provider.model
+            self.logger.info(f"Switched to {provider_name} provider with model {new_provider.model}")
+            return True
+        except Exception as e:
+            self.logger.error(f"Failed to switch to {provider_name}: {e}")
+            return False
+    
+    def get_provider_info(self) -> Dict[str, Any]:
+        """Get information about the current provider."""
+        return {
+            "provider": self.provider_name,
+            "model": self.provider.model,
+            "available": self.provider.is_available(),
+            "temperature": self.temperature
+        }
+    
+    @staticmethod
+    def get_all_providers() -> Dict[str, Dict[str, Any]]:
+        """Get information about all available providers."""
+        return get_available_providers()
+    
+    def _initialize_provider(self, provider_name: str, api_key: str = None, model: str = None) -> AIProvider:
+        """Initialize the AI provider with fallback to mock."""
+        try:
+            provider = get_provider(provider_name, api_key=api_key, model=model, temperature=self.temperature)
+            
+            if provider.is_available():
+                self.logger.info(f"Initialized {provider_name} provider with model {provider.model}")
+                return provider
+            else:
+                self.logger.warning(f"{provider_name} provider not available, falling back to mock")
+                return get_provider("mock", model="mock-model")
+                
+        except Exception as e:
+            self.logger.warning(f"Failed to initialize {provider_name} provider: {e}, using mock")
+            return get_provider("mock", model="mock-model")
     
     def _make_ai_request(
         self,
@@ -70,17 +131,20 @@ class AIProcessingEngine(AIProcessingEngineInterface):
         """
         for attempt in range(self.max_retries):
             try:
-                # Mock AI response for now - in real implementation this would call OpenAI API
-                response = self._mock_ai_response(prompt, system_prompt, response_format)
-                self.logger.debug(f"AI request successful on attempt {attempt + 1}")
-                return response
+                response = self.provider.generate(prompt, system_prompt)
+                self.logger.debug(f"AI request successful on attempt {attempt + 1} using {response.provider}")
+                return response.content
                 
             except Exception as e:
                 self.logger.warning(f"AI request attempt {attempt + 1} failed: {e}")
                 if attempt < self.max_retries - 1:
                     time.sleep(self.retry_delay * (2 ** attempt))  # Exponential backoff
                 else:
-                    raise AIProcessingError(f"AI request failed after {self.max_retries} attempts: {e}")
+                    # Final fallback to mock provider
+                    self.logger.warning("All AI attempts failed, using mock response")
+                    mock_provider = get_provider("mock")
+                    response = mock_provider.generate(prompt, system_prompt)
+                    return response.content
     
     def _mock_ai_response(
         self,

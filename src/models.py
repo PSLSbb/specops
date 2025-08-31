@@ -499,7 +499,9 @@ class AppConfig:
     hook_config: HookConfig = field(default_factory=HookConfig)
     workspace_path: str = '.'
     output_dir: str = '.'
+    ai_provider: str = 'openai'
     ai_model: str = 'gpt-3.5-turbo'
+    ai_api_key: Optional[str] = None
     ai_temperature: float = 0.7
     debug_mode: bool = False
 

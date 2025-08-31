@@ -107,10 +107,15 @@ class SpecOpsApp:
             self._content_analyzer = ContentAnalyzer(str(self.workspace_path))
             
             # Initialize AI processing engine
+            ai_provider = getattr(self.config, 'ai_provider', 'openai')
+            ai_api_key = getattr(self.config, 'ai_api_key', None)
+            
             self._ai_engine = AIProcessingEngine(
+                provider=ai_provider,
                 model=self.config.ai_model,
                 temperature=self.config.ai_temperature,
-                style_config=self.config.style_config
+                style_config=self.config.style_config,
+                api_key=ai_api_key
             )
             
             # Initialize generators

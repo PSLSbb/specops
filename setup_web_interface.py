@@ -170,7 +170,7 @@ def create_local_demo():
 </body>
 </html>"""
     
-    with open("demo.html", "w") as f:
+    with open("demo.html", "w", encoding='utf-8') as f:
         f.write(demo_html)
     
     print("✅ Local demo created: demo.html")

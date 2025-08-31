@@ -11,6 +11,7 @@ from functools import lru_cache
 
 from ..models import RepositoryAnalysis, Concept, SetupStep, CodeExample, Dependency
 from ..interfaces import ContentAnalyzerInterface
+from .dependency_analyzer import DependencyAnalyzer
 
 
 class ContentAnalyzer(ContentAnalyzerInterface):
@@ -34,6 +35,9 @@ class ContentAnalyzer(ContentAnalyzerInterface):
         # Caching for performance
         self._content_cache = {}
         self._relationship_cache = {}
+        
+        # Initialize dependency analyzer
+        self._dependency_analyzer = DependencyAnalyzer()
         
     def analyze_repository(self, repo_path: str) -> RepositoryAnalysis:
         """Analyze repository content and extract structured information."""
@@ -59,6 +63,14 @@ class ContentAnalyzer(ContentAnalyzerInterface):
             except Exception as e:
                 self.logger.error(f"Error processing {md_file}: {e}")
                 continue
+        
+        # Also analyze dependency files
+        try:
+            file_dependencies = self._dependency_analyzer.analyze_dependency_files(str(repo_path))
+            all_dependencies.extend(file_dependencies)
+            self.logger.info(f"Found {len(file_dependencies)} dependencies from dependency files")
+        except Exception as e:
+            self.logger.warning(f"Error analyzing dependency files: {e}")
         
         return RepositoryAnalysis(
             concepts=self._deduplicate_concepts(all_concepts),
@@ -140,11 +152,23 @@ class ContentAnalyzer(ContentAnalyzerInterface):
     def _extract_dependencies(self, content: str, file_path: str) -> List[Dependency]:
         """Extract dependencies from content."""
         dependencies = []
-        patterns = [(r'pip install\s+([^\s\n]+)', 'runtime'), (r'npm install\s+([^\s\n]+)', 'runtime'), (r'yarn add\s+([^\s\n]+)', 'runtime'), (r'gem install\s+([^\s\n]+)', 'runtime'), (r'apt-get install\s+([^\s\n]+)', 'runtime'), (r'brew install\s+([^\s\n]+)', 'runtime')]
         
-        for pattern, dep_type in patterns:
+        # Command-line install patterns
+        install_patterns = [
+            (r'pip install\s+([^\s\n]+)', 'runtime'),
+            (r'npm install\s+([^\s\n]+)', 'runtime'),
+            (r'yarn add\s+([^\s\n]+)', 'runtime'),
+            (r'gem install\s+([^\s\n]+)', 'runtime'),
+            (r'apt-get install\s+([^\s\n]+)', 'runtime'),
+            (r'brew install\s+([^\s\n]+)', 'runtime'),
+            (r'cargo install\s+([^\s\n]+)', 'runtime'),
+            (r'go install\s+([^\s\n]+)', 'runtime'),
+            (r'composer require\s+([^\s\n]+)', 'runtime')
+        ]
+        
+        for pattern, dep_type in install_patterns:
             for match in re.findall(pattern, content, re.IGNORECASE):
-                dep_name = match.strip().split('==')[0].split('>=')[0].split('<=')[0]
+                dep_name = match.strip().split('==')[0].split('>=')[0].split('<=')[0].split('@')[0]
                 version = None
                 if '==' in match:
                     version = match.split('==')[1].strip()
@@ -152,8 +176,35 @@ class ContentAnalyzer(ContentAnalyzerInterface):
                     version = '>=' + match.split('>=')[1].strip()
                 elif '<=' in match:
                     version = '<=' + match.split('<=')[1].strip()
+                elif '@' in match and dep_type == 'javascript':
+                    version = match.split('@')[1].strip()
                 
-                dependencies.append(Dependency(name=dep_name, version=version, type=dep_type, description=f"Dependency found in {file_path}"))
+                dependencies.append(Dependency(
+                    name=dep_name, 
+                    version=version, 
+                    type=dep_type, 
+                    description=f"Dependency found in {file_path}"
+                ))
+        
+        # Also check for dependency file references
+        dep_file_patterns = [
+            (r'requirements\.txt', 'build'),
+            (r'package\.json', 'build'),
+            (r'Gemfile', 'build'),
+            (r'Cargo\.toml', 'build'),
+            (r'go\.mod', 'build'),
+            (r'composer\.json', 'build')
+        ]
+        
+        for pattern, dep_type in dep_file_patterns:
+            if re.search(pattern, content, re.IGNORECASE):
+                dependencies.append(Dependency(
+                    name=pattern.replace('\\', ''),
+                    version=None,
+                    type=dep_type,
+                    description=f"Dependency file referenced in {file_path}"
+                ))
+        
         return dependencies
     
     def _build_file_structure(self, repo_path: Path) -> Dict[str, Any]:

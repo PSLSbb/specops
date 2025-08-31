@@ -33,6 +33,11 @@ def main():
         repo_url = example_repos[0]
         print(f"Using example repository: {repo_url}")
     
+    # Validate URL format
+    if not repo_url.startswith(('http://', 'https://')):
+        print(f"❌ Invalid URL format: {repo_url}")
+        return 1
+    
     # Check if URL is supported
     if not OnlineContentAnalyzer.is_supported_url(repo_url):
         print(f"❌ Unsupported repository URL: {repo_url}")

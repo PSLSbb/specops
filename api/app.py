@@ -45,6 +45,7 @@ def analyze_repository():
     try:
         data = request.get_json()
         repo_url = data.get('repo_url')
+        ai_config = data.get('ai_config', {})
         
         if not repo_url:
             return jsonify({'error': 'repo_url is required'}), 400
@@ -59,8 +60,22 @@ def analyze_repository():
         
         logger.info(f"Analyzing repository: {repo_url}")
         
-        # Create SpecOps app and analyze
+        # Create SpecOps app with AI configuration
         specops_app = create_specops_app()
+        
+        # Configure AI provider if specified
+        if ai_config.get('provider') and ai_config.get('provider') != 'mock':
+            try:
+                success = specops_app.ai_engine.switch_provider(
+                    ai_config.get('provider'),
+                    api_key=ai_config.get('apiKey'),
+                    model=ai_config.get('model')
+                )
+                if not success:
+                    logger.warning(f"Failed to switch to {ai_config.get('provider')}, using default")
+            except Exception as e:
+                logger.warning(f"Error configuring AI provider: {e}")
+        
         analysis = specops_app.analyze_repository(repo_url=repo_url)
         
         # Convert analysis to JSON-serializable format

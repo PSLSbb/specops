@@ -17,6 +17,64 @@ function setRepo(url) {
     document.getElementById('repoUrl').value = url;
 }
 
+function updateProviderOptions() {
+    const provider = document.getElementById('aiProvider').value;
+    const modelSelect = document.getElementById('aiModel');
+    const apiKeySection = document.getElementById('apiKeySection');
+    const apiKeyLabel = document.getElementById('apiKeyLabel');
+    const providerDescription = document.getElementById('providerDescription');
+    
+    // Clear existing options
+    modelSelect.innerHTML = '';
+    
+    if (provider === 'mock') {
+        // Demo mode
+        modelSelect.innerHTML = '<option value="mock-model">Mock Model</option>';
+        apiKeySection.classList.add('hidden');
+        providerDescription.innerHTML = '🎭 Demo mode uses realistic mock data for testing the interface.';
+        providerDescription.className = 'text-sm text-gray-600 bg-blue-50 p-3 rounded-lg';
+    } else {
+        // Real provider
+        const providerInfo = AI_PROVIDERS[provider];
+        
+        // Populate models
+        providerInfo.models.forEach(model => {
+            const option = document.createElement('option');
+            option.value = model;
+            option.textContent = model;
+            modelSelect.appendChild(option);
+        });
+        
+        // Show API key section
+        apiKeySection.classList.remove('hidden');
+        apiKeyLabel.textContent = providerInfo.keyLabel;
+        
+        // Update description
+        providerDescription.innerHTML = `${providerInfo.name}: ${providerInfo.description}`;
+        providerDescription.className = 'text-sm text-gray-600 bg-green-50 p-3 rounded-lg';
+        
+        // Load saved API key
+        const savedKey = localStorage.getItem(`${provider}_api_key`);
+        if (savedKey) {
+            document.getElementById('apiKey').value = savedKey;
+        }
+    }
+}
+
+function saveApiKey() {
+    const provider = document.getElementById('aiProvider').value;
+    const apiKey = document.getElementById('apiKey').value;
+    
+    if (provider !== 'mock' && apiKey) {
+        localStorage.setItem(`${provider}_api_key`, apiKey);
+    }
+}
+
+// Initialize provider options on page load
+document.addEventListener('DOMContentLoaded', function() {
+    updateProviderOptions();
+});
+
 function showTab(tabName) {
     // Hide all tab contents
     document.querySelectorAll('.tab-content').forEach(content => {
@@ -81,15 +139,26 @@ async function analyzeRepository() {
         // Simulate API call delay
         await new Promise(resolve => setTimeout(resolve, 2000));
         
+        // Get AI configuration
+        const aiProvider = document.getElementById('aiProvider').value;
+        const aiModel = document.getElementById('aiModel').value;
+        const aiKey = document.getElementById('apiKey').value;
+        
+        // Save API key if provided
+        if (aiProvider !== 'mock' && aiKey) {
+            saveApiKey();
+        }
+        
         // Analyze repository (use real API or mock data)
-        const analysis = USE_MOCK_DATA ? 
+        const useMock = USE_MOCK_DATA || aiProvider === 'mock';
+        const analysis = useMock ? 
             await mockAnalyzeRepo(repoInfo) : 
-            await analyzeRepoAPI(repoInfo);
+            await analyzeRepoAPI(repoInfo, { provider: aiProvider, model: aiModel, apiKey: aiKey });
         
         // Generate documents (use real API or mock data)
-        const documents = USE_MOCK_DATA ? 
+        const documents = useMock ? 
             await mockGenerateDocuments(analysis) : 
-            await generateDocumentsAPI(repoInfo, analysis);
+            await generateDocumentsAPI(repoInfo, analysis, { provider: aiProvider, model: aiModel, apiKey: aiKey });
         
         // Display results
         displayResults(analysis, documents);
@@ -124,15 +193,50 @@ function extractRepoInfo(url) {
 const API_BASE_URL = 'https://your-api-domain.com'; // Replace with your actual API URL
 const USE_MOCK_DATA = true; // Set to false when you have a real API deployed
 
+// AI Provider configurations
+const AI_PROVIDERS = {
+    openai: {
+        name: 'OpenAI ChatGPT',
+        models: ['gpt-4o', 'gpt-4o-mini', 'gpt-4-turbo', 'gpt-4', 'gpt-3.5-turbo'],
+        description: 'Industry standard for AI applications',
+        keyLabel: 'OpenAI API Key'
+    },
+    anthropic: {
+        name: 'Anthropic Claude',
+        models: ['claude-3-5-sonnet-20241022', 'claude-3-5-haiku-20241022', 'claude-3-opus-20240229'],
+        description: 'Strong reasoning, multilingual, ethical AI',
+        keyLabel: 'Anthropic API Key'
+    },
+    google: {
+        name: 'Google AI Studio',
+        models: ['gemini-1.5-pro', 'gemini-1.5-flash', 'gemini-1.0-pro'],
+        description: 'No billing surprises, great for prototyping',
+        keyLabel: 'Google AI API Key'
+    },
+    openrouter: {
+        name: 'OpenRouter',
+        models: ['deepseek/deepseek-chat', 'qwen/qwen-2.5-72b-instruct', 'meta-llama/llama-3.1-70b-instruct'],
+        description: '50+ models, one key, easy model switching',
+        keyLabel: 'OpenRouter API Key'
+    },
+    groq: {
+        name: 'Groq',
+        models: ['llama-3.1-70b-versatile', 'llama-3.1-8b-instant', 'mixtral-8x7b-32768'],
+        description: 'Fast inference, ideal for real-time apps',
+        keyLabel: 'Groq API Key'
+    }
+};
+
 // Real API functions
-async function analyzeRepoAPI(repoInfo) {
+async function analyzeRepoAPI(repoInfo, aiConfig = {}) {
     const response = await fetch(`${API_BASE_URL}/api/analyze`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            repo_url: repoInfo.url
+            repo_url: repoInfo.url,
+            ai_config: aiConfig
         })
     });
     
@@ -199,7 +303,7 @@ async function mockAnalyzeRepo(repoInfo) {
 }
 
 // Real API document generation
-async function generateDocumentsAPI(repoInfo, analysis) {
+async function generateDocumentsAPI(repoInfo, analysis, aiConfig = {}) {
     const response = await fetch(`${API_BASE_URL}/api/generate`, {
         method: 'POST',
         headers: {
@@ -207,7 +311,8 @@ async function generateDocumentsAPI(repoInfo, analysis) {
         },
         body: JSON.stringify({
             repo_url: repoInfo.url,
-            analysis: analysis
+            analysis: analysis,
+            ai_config: aiConfig
         })
     });
     
