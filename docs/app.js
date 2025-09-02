@@ -113,6 +113,70 @@ function downloadContent(type) {
     URL.revokeObjectURL(url);
 }
 
+function copyContent(type) {
+    const content = generatedContent[type];
+    if (!content) return;
+    
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(content).then(() => {
+            showNotification('Content copied to clipboard!', 'success');
+        }).catch(() => {
+            fallbackCopy(content);
+        });
+    } else {
+        fallbackCopy(content);
+    }
+}
+
+function fallbackCopy(text) {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    textArea.style.top = '-999999px';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    
+    try {
+        document.execCommand('copy');
+        showNotification('Content copied to clipboard!', 'success');
+    } catch (err) {
+        showNotification('Failed to copy content', 'error');
+    }
+    
+    document.body.removeChild(textArea);
+}
+
+function showNotification(message, type = 'info') {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 px-4 py-2 rounded-lg text-white z-50 transition-all duration-300 transform translate-x-full opacity-0 ${
+        type === 'success' ? 'bg-green-500' : 
+        type === 'error' ? 'bg-red-500' : 'bg-blue-500'
+    }`;
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    // Animate in
+    setTimeout(() => {
+        notification.style.transform = 'translateX(0)';
+        notification.style.opacity = '1';
+    }, 100);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        notification.style.transform = 'translateX(100%)';
+        notification.style.opacity = '0';
+        setTimeout(() => {
+            if (notification.parentNode) {
+                document.body.removeChild(notification);
+            }
+        }, 300);
+    }, 3000);
+}
+
 // Mock analysis function (since we can't run Python in browser)
 async function analyzeRepository() {
     const repoUrl = document.getElementById('repoUrl').value.trim();
@@ -554,10 +618,15 @@ function displayResults(analysis, documents) {
         </div>
     `;
     
-    // Update document content
-    document.getElementById('tasksMarkdown').textContent = documents.tasks;
-    document.getElementById('faqMarkdown').textContent = documents.faq;
-    document.getElementById('quickstartMarkdown').textContent = documents.quickstart;
+    // Format and display document content
+    document.getElementById('tasksMarkdown').innerHTML = formatContent(documents.tasks, 'tasks');
+    document.getElementById('faqMarkdown').innerHTML = formatContent(documents.faq, 'faq');
+    document.getElementById('quickstartMarkdown').innerHTML = formatContent(documents.quickstart, 'quickstart');
+    
+    // Apply syntax highlighting
+    if (typeof Prism !== 'undefined') {
+        Prism.highlightAll();
+    }
     
     // Show results with animation
     const results = document.getElementById('results');
@@ -569,6 +638,102 @@ function displayResults(analysis, documents) {
     
     // Scroll to results
     results.scrollIntoView({ behavior: 'smooth' });
+}
+
+// Content formatting functions
+function formatContent(content, type) {
+    if (typeof marked !== 'undefined') {
+        // Configure marked for better rendering
+        marked.setOptions({
+            breaks: true,
+            gfm: true,
+            highlight: function(code, lang) {
+                if (typeof Prism !== 'undefined' && Prism.languages[lang]) {
+                    return Prism.highlight(code, Prism.languages[lang], lang);
+                }
+                return code;
+            }
+        });
+        
+        let html = marked.parse(content);
+        
+        // Apply special formatting for tasks
+        if (type === 'tasks') {
+            html = formatTasksSpecial(html);
+        }
+        
+        return html;
+    }
+    
+    // Fallback: basic formatting
+    return basicMarkdownFormat(content, type);
+}
+
+function formatTasksSpecial(html) {
+    // Wrap task sections in special styling
+    html = html.replace(
+        /(<h2[^>]*>.*?<\/h2>)([\s\S]*?)(?=<h2|$)/g,
+        function(match, title, content) {
+            // Extract difficulty and time info
+            const difficultyMatch = content.match(/<strong>Difficulty:<\/strong>\s*(\w+)/);
+            const timeMatch = content.match(/<strong>Estimated Time:<\/strong>\s*([^<]+)/);
+            
+            let difficulty = difficultyMatch ? difficultyMatch[1] : 'intermediate';
+            let time = timeMatch ? timeMatch[1].trim() : 'Unknown';
+            
+            // Add task meta info
+            const metaHtml = `
+                <div class="task-meta">
+                    <span class="difficulty-badge difficulty-${difficulty}">${difficulty}</span>
+                    <span class="text-gray-600">⏱️ ${time}</span>
+                </div>
+            `;
+            
+            return `<div class="task-section">${title}${content}${metaHtml}</div>`;
+        }
+    );
+    
+    // Format checklists
+    html = html.replace(
+        /<ul>([\s\S]*?)<\/ul>/g,
+        function(match, content) {
+            if (content.includes('[ ]')) {
+                return '<ul class="checklist">' + content + '</ul>';
+            }
+            return match;
+        }
+    );
+    
+    return html;
+}
+
+function basicMarkdownFormat(content, type) {
+    // Basic markdown-like formatting for fallback
+    let formatted = content
+        .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+        .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+        .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/`([^`]+)`/g, '<code>$1</code>')
+        .replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre><code class="language-$1">$2</code></pre>')
+        .replace(/^- \[ \]/gm, '<li class="checklist-item">☐')
+        .replace(/^- \[x\]/gm, '<li class="checklist-item">☑')
+        .replace(/^- (.*$)/gm, '<li>$1</li>')
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/^(.+)$/gm, '<p>$1</p>')
+        .replace(/<p><\/p>/g, '')
+        .replace(/^---$/gm, '<hr>');
+    
+    // Wrap in appropriate containers
+    if (type === 'tasks') {
+        formatted = formatted.replace(
+            /(<h2>.*?<\/h2>)([\s\S]*?)(?=<h2>|$)/g,
+            '<div class="task-section">$1$2</div>'
+        );
+    }
+    
+    return formatted;
 }
 
 // Initialize the app
