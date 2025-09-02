@@ -724,6 +724,22 @@ function basicMarkdownFormat(content, type) {
     return formatted;
 }
 
+// Mobile menu functions
+function toggleMobileMenu() {
+    const menu = document.getElementById('mobileMenu');
+    menu.classList.toggle('show');
+}
+
+// Close mobile menu when clicking outside
+document.addEventListener('click', function(event) {
+    const menu = document.getElementById('mobileMenu');
+    const menuBtn = document.querySelector('.mobile-menu-btn');
+    
+    if (menu && menuBtn && !menu.contains(event.target) && !menuBtn.contains(event.target)) {
+        menu.classList.remove('show');
+    }
+});
+
 // Initialize the app
 document.addEventListener('DOMContentLoaded', function() {
     // Add enter key support for repository input
