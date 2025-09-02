@@ -190,8 +190,8 @@ function extractRepoInfo(url) {
 }
 
 // Configuration
-const API_BASE_URL = 'https://api.specops.dev'; // Replace with your actual API URL
-const USE_MOCK_DATA = true; // Set to false when you have a real API deployed
+const API_BASE_URL = ''; // No API needed for demo mode
+const USE_MOCK_DATA = true; // Using mock data for GitHub Pages demo
 
 // AI Provider configurations
 const AI_PROVIDERS = {
