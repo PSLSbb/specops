@@ -30,9 +30,8 @@ function updateProviderOptions() {
     if (provider === 'mock') {
         // Demo mode
         modelSelect.innerHTML = '<option value="mock-model">Mock Model</option>';
-        apiKeySection.classList.add('hidden');
+        apiKeySection.style.display = 'none';
         providerDescription.innerHTML = '🎭 Demo mode uses realistic mock data for testing the interface.';
-        providerDescription.className = 'text-sm text-gray-600 bg-blue-50 p-3 rounded-lg';
     } else {
         // Real provider
         const providerInfo = AI_PROVIDERS[provider];
@@ -46,12 +45,11 @@ function updateProviderOptions() {
         });
         
         // Show API key section
-        apiKeySection.classList.remove('hidden');
-        apiKeyLabel.textContent = providerInfo.keyLabel;
+        apiKeySection.style.display = 'block';
+        apiKeyLabel.innerHTML = `${providerInfo.keyLabel} <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal;">(stored locally, not sent to our servers)</span>`;
         
         // Update description
         providerDescription.innerHTML = `${providerInfo.name}: ${providerInfo.description}`;
-        providerDescription.className = 'text-sm text-gray-600 bg-green-50 p-3 rounded-lg';
         
         // Load saved API key
         const savedKey = localStorage.getItem(`${provider}_api_key`);
@@ -78,22 +76,19 @@ document.addEventListener('DOMContentLoaded', function() {
 function showTab(tabName) {
     // Hide all tab contents
     document.querySelectorAll('.tab-content').forEach(content => {
-        content.classList.add('hidden');
+        content.classList.remove('active');
     });
     
     // Remove active state from all tabs
     document.querySelectorAll('.tab-button').forEach(button => {
-        button.classList.remove('border-blue-500', 'text-blue-600');
-        button.classList.add('border-transparent', 'text-gray-500');
+        button.classList.remove('active');
     });
     
     // Show selected tab content
-    document.getElementById(tabName + 'Content').classList.remove('hidden');
+    document.getElementById(tabName + 'Content').classList.add('active');
     
     // Add active state to selected tab
-    const activeTab = document.getElementById(tabName + 'Tab');
-    activeTab.classList.remove('border-transparent', 'text-gray-500');
-    activeTab.classList.add('border-blue-500', 'text-blue-600');
+    document.getElementById(tabName + 'Tab').classList.add('active');
 }
 
 function downloadContent(type) {
@@ -151,24 +146,19 @@ function fallbackCopy(text) {
 function showNotification(message, type = 'info') {
     // Create notification element
     const notification = document.createElement('div');
-    notification.className = `fixed top-4 right-4 px-4 py-2 rounded-lg text-white z-50 transition-all duration-300 transform translate-x-full opacity-0 ${
-        type === 'success' ? 'bg-green-500' : 
-        type === 'error' ? 'bg-red-500' : 'bg-blue-500'
-    }`;
+    notification.className = `notification ${type}`;
     notification.textContent = message;
     
     document.body.appendChild(notification);
     
     // Animate in
     setTimeout(() => {
-        notification.style.transform = 'translateX(0)';
-        notification.style.opacity = '1';
+        notification.classList.add('show');
     }, 100);
     
     // Remove after 3 seconds
     setTimeout(() => {
-        notification.style.transform = 'translateX(100%)';
-        notification.style.opacity = '0';
+        notification.classList.remove('show');
         setTimeout(() => {
             if (notification.parentNode) {
                 document.body.removeChild(notification);
@@ -192,8 +182,8 @@ async function analyzeRepository() {
     }
     
     // Show loading state
-    document.getElementById('loadingState').classList.remove('hidden');
-    document.getElementById('results').classList.add('hidden');
+    document.getElementById('loadingState').style.display = 'block';
+    document.getElementById('results').style.display = 'none';
     document.getElementById('analyzeBtn').disabled = true;
     
     try {
@@ -231,7 +221,7 @@ async function analyzeRepository() {
         console.error('Analysis failed:', error);
         alert('Analysis failed. Please try again or check the repository URL.');
     } finally {
-        document.getElementById('loadingState').classList.add('hidden');
+        document.getElementById('loadingState').style.display = 'none';
         document.getElementById('analyzeBtn').disabled = false;
     }
 }
@@ -598,23 +588,21 @@ function displayResults(analysis, documents) {
     // Update analysis summary
     const summary = document.getElementById('analysisSummary');
     summary.innerHTML = `
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-            <div>
-                <div class="text-lg font-semibold">${analysis.concepts}</div>
-                <div class="text-xs">Concepts</div>
-            </div>
-            <div>
-                <div class="text-lg font-semibold">${analysis.setupSteps}</div>
-                <div class="text-xs">Setup Steps</div>
-            </div>
-            <div>
-                <div class="text-lg font-semibold">${analysis.codeExamples}</div>
-                <div class="text-xs">Code Examples</div>
-            </div>
-            <div>
-                <div class="text-lg font-semibold">${analysis.dependencies}</div>
-                <div class="text-xs">Dependencies</div>
-            </div>
+        <div class="summary-item">
+            <div class="summary-number">${analysis.concepts}</div>
+            <div class="summary-label">Concepts</div>
+        </div>
+        <div class="summary-item">
+            <div class="summary-number">${analysis.setupSteps}</div>
+            <div class="summary-label">Setup Steps</div>
+        </div>
+        <div class="summary-item">
+            <div class="summary-number">${analysis.codeExamples}</div>
+            <div class="summary-label">Code Examples</div>
+        </div>
+        <div class="summary-item">
+            <div class="summary-number">${analysis.dependencies}</div>
+            <div class="summary-label">Dependencies</div>
         </div>
     `;
     
@@ -630,7 +618,7 @@ function displayResults(analysis, documents) {
     
     // Show results with animation
     const results = document.getElementById('results');
-    results.classList.remove('hidden');
+    results.style.display = 'block';
     results.classList.add('fade-in');
     
     // Show first tab by default

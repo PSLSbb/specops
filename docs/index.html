@@ -4,346 +4,898 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SpecOps - AI-Powered Onboarding Factory</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
     <style>
-        .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        .card-hover {
-            transition: all 0.3s ease;
+
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #111111;
+            --bg-tertiary: #1a1a1a;
+            --bg-card: #161616;
+            --text-primary: #ffffff;
+            --text-secondary: #a1a1aa;
+            --text-muted: #71717a;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --border: #27272a;
+            --border-light: #3f3f46;
+            --border-focus: #4f46e5;
         }
-        .card-hover:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
         }
-        .loading-spinner {
-            border: 3px solid #f3f3f4;
-            border-top: 3px solid #3498db;
-            border-radius: 50%;
+
+        /* Background Pattern */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(245, 158, 11, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            font-size: 1.125rem;
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+
+        .logo-icon {
             width: 24px;
             height: 24px;
-            animation: spin 1s linear infinite;
+            background: linear-gradient(135deg, var(--accent), var(--success));
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
         }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--text-primary);
+        }
+
+        .github-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+        }
+
+        .github-link:hover {
+            background: var(--bg-tertiary);
+            border-color: var(--border-light);
+        }
+
+        /* Main Content */
+        .main {
+            padding-top: 80px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 4rem 0;
+            margin-bottom: 3rem;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        /* Demo Section */
+        .demo-section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .demo-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .demo-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .demo-description {
+            color: var(--text-secondary);
+        }
+
+        /* Input Section */
+        .input-section {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .input-field::placeholder {
+            color: var(--text-muted);
+        }
+
+        .input-row {
+            display: flex;
+            gap: 1rem;
+            align-items: end;
+        }
+
+        .input-row .input-field {
+            flex: 1;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-tertiary);
+            border-color: var(--border-light);
+        }
+
+        /* Examples */
+        .examples {
+            margin-bottom: 1.5rem;
+        }
+
+        .examples-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .example-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .example-tag {
+            padding: 0.25rem 0.75rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .example-tag:hover {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        /* AI Configuration */
+        .ai-config {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .ai-config-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .config-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .provider-description {
+            padding: 0.75rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        /* Loading State */
+        .loading-state {
+            text-align: center;
+            padding: 3rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin: 2rem 0;
+        }
+
+        .loading-spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid var(--border);
+            border-top: 3px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        .fade-in {
-            animation: fadeIn 0.5s ease-in;
+
+        /* Results Section */
+        .results-section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-top: 2rem;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+
+        .results-summary {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
         }
-        
-        /* Enhanced formatting for generated content */
+
+        .summary-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--success);
+            margin-bottom: 1rem;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            text-align: center;
+        }
+
+        .summary-item {
+            padding: 1rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        .summary-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .summary-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* Tabs */
+        .tabs {
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2rem;
+        }
+
+        .tab-list {
+            display: flex;
+            gap: 0;
+        }
+
+        .tab-button {
+            padding: 1rem 1.5rem;
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tab-button.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .tab-button:hover:not(.active) {
+            color: var(--text-primary);
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .content-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .content-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* Generated Content */
         .generated-content {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            max-height: 600px;
+            overflow-y: auto;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             line-height: 1.6;
-            color: #374151;
+            color: var(--text-primary);
         }
-        
+
         .generated-content h1 {
             font-size: 1.75rem;
             font-weight: 700;
-            color: #1f2937;
+            color: var(--text-primary);
             margin-bottom: 1rem;
-            border-bottom: 2px solid #e5e7eb;
+            border-bottom: 2px solid var(--border);
             padding-bottom: 0.5rem;
         }
-        
+
         .generated-content h2 {
             font-size: 1.375rem;
             font-weight: 600;
-            color: #374151;
-            margin-top: 1.5rem;
-            margin-bottom: 0.75rem;
-            padding: 0.5rem 0;
-            border-left: 4px solid #3b82f6;
-            padding-left: 1rem;
-            background: #f8fafc;
+            color: var(--text-primary);
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            padding: 0.75rem 1rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            border-left: 4px solid var(--accent);
         }
-        
+
         .generated-content h3 {
             font-size: 1.125rem;
             font-weight: 600;
-            color: #4b5563;
-            margin-top: 1rem;
-            margin-bottom: 0.5rem;
-        }
-        
-        .generated-content p {
+            color: var(--text-secondary);
+            margin-top: 1.5rem;
             margin-bottom: 0.75rem;
         }
-        
+
+        .generated-content p {
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+
         .generated-content strong {
             font-weight: 600;
-            color: #1f2937;
+            color: var(--text-primary);
         }
-        
+
         .generated-content ul, .generated-content ol {
             margin-bottom: 1rem;
             padding-left: 1.5rem;
         }
-        
+
         .generated-content li {
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
         }
-        
+
         .generated-content code {
-            background-color: #f1f5f9;
-            color: #e11d48;
+            background: var(--bg-primary);
+            color: var(--warning);
             padding: 0.125rem 0.375rem;
-            border-radius: 0.25rem;
-            font-family: 'Courier New', monospace;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
             font-size: 0.875rem;
-            border: 1px solid #e2e8f0;
+            border: 1px solid var(--border);
         }
-        
+
         .generated-content pre {
-            background-color: #0f172a;
-            color: #f1f5f9;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
             padding: 1rem;
-            border-radius: 0.5rem;
             overflow-x: auto;
             margin: 1rem 0;
-            border: 1px solid #334155;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.875rem;
         }
-        
+
         .generated-content pre code {
             background: none;
             color: inherit;
             padding: 0;
             border: none;
         }
-        
+
         .generated-content hr {
             border: none;
-            border-top: 2px solid #e5e7eb;
-            margin: 1.5rem 0;
+            border-top: 1px solid var(--border);
+            margin: 2rem 0;
         }
-        
+
         .generated-content blockquote {
-            border-left: 4px solid #06b6d4;
-            padding-left: 1rem;
+            border-left: 4px solid var(--accent);
+            padding: 1rem;
             margin: 1rem 0;
-            font-style: italic;
-            color: #64748b;
-            background: #f0f9ff;
-            padding: 0.75rem 1rem;
-            border-radius: 0.25rem;
+            background: var(--bg-primary);
+            border-radius: 0 8px 8px 0;
+            color: var(--text-secondary);
         }
-        
+
         /* Task-specific styling */
         .task-section {
-            background: #fefefe;
-            border: 1px solid #e2e8f0;
-            border-radius: 0.5rem;
-            padding: 1.25rem;
-            margin-bottom: 1.25rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
         }
-        
+
         .task-meta {
             display: flex;
-            gap: 0.75rem;
-            margin-top: 0.75rem;
+            gap: 1rem;
+            margin-top: 1rem;
             font-size: 0.875rem;
         }
-        
+
         .difficulty-badge {
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
             font-size: 0.75rem;
             font-weight: 500;
         }
-        
+
         .difficulty-beginner {
-            background-color: #dcfce7;
-            color: #166534;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.2);
         }
-        
+
         .difficulty-intermediate {
-            background-color: #fef3c7;
-            color: #92400e;
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+            border: 1px solid rgba(245, 158, 11, 0.2);
         }
-        
+
         .difficulty-advanced {
-            background-color: #fee2e2;
-            color: #991b1b;
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error);
+            border: 1px solid rgba(239, 68, 68, 0.2);
         }
-        
+
         .checklist {
             list-style: none;
             padding-left: 0;
         }
-        
+
         .checklist li {
             position: relative;
             padding-left: 1.5rem;
             margin-bottom: 0.5rem;
         }
-        
+
         .checklist li:before {
             content: '☐';
             position: absolute;
             left: 0;
-            color: #6b7280;
+            color: var(--text-muted);
             font-size: 1rem;
+        }
+
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 100px;
+            right: 2rem;
+            z-index: 200;
+            padding: 1rem 1.5rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            transform: translateX(100%);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .notification.success {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .notification.error {
+            border-color: var(--error);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav {
+                padding: 1rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .config-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .input-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .summary-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .tab-list {
+                overflow-x: auto;
+            }
+
+            .content-header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 1rem;
+            }
+
+            .content-actions {
+                justify-content: center;
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-light);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
         }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
     <!-- Header -->
-    <header class="gradient-bg text-white">
-        <div class="container mx-auto px-6 py-8">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-4">
-                    <i class="fas fa-rocket text-3xl"></i>
-                    <div>
-                        <h1 class="text-3xl font-bold">SpecOps</h1>
-                        <p class="text-blue-100">AI-Powered Onboarding Factory</p>
-                    </div>
-                </div>
-                <div class="hidden md:flex space-x-6">
-                    <a href="#features" class="hover:text-blue-200 transition-colors">Features</a>
-                    <a href="#demo" class="hover:text-blue-200 transition-colors">Demo</a>
-                    <a href="#" class="hover:text-blue-200 transition-colors">
-                        <i class="fab fa-github mr-2"></i>GitHub
-                    </a>
-                </div>
+    <header class="header">
+        <nav class="nav">
+            <a href="landing.html" class="logo">
+                <div class="logo-icon">⚡</div>
+                SpecOps
+            </a>
+            <div class="nav-links">
+                <a href="landing.html" class="nav-link">Home</a>
+                <a href="#demo" class="nav-link">Demo</a>
+                <a href="#" class="nav-link">Docs</a>
+                <a href="#" class="nav-link">Examples</a>
             </div>
-        </div>
+            <a href="https://github.com/PSLSbb/specops" class="github-link">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                </svg>
+                GitHub
+            </a>
+        </nav>
     </header>
 
-    <!-- Hero Section -->
-    <section class="py-16">
-        <div class="container mx-auto px-6 text-center">
-            <h2 class="text-4xl md:text-6xl font-bold text-gray-800 mb-6">
-                Generate Onboarding Materials
-                <span class="text-blue-600">Instantly</span>
-            </h2>
-            <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-                Analyze any GitHub repository and automatically generate comprehensive onboarding tasks, 
-                FAQs, and quick start guides using AI.
-            </p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <button onclick="scrollToDemo()" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors">
-                    <i class="fas fa-play mr-2"></i>Try It Now
-                </button>
-                <a href="#features" class="border border-gray-300 hover:border-gray-400 text-gray-700 px-8 py-3 rounded-lg font-semibold transition-colors">
-                    Learn More
-                </a>
-            </div>
-        </div>
-    </section>
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <!-- Hero Section -->
+            <section class="hero">
+                <div class="hero-badge">
+                    🚀 AI-Powered Repository Analysis
+                    <span style="color: var(--accent);">Try it now →</span>
+                </div>
+                
+                <h1 class="hero-title">
+                    Generate Onboarding Materials Instantly
+                </h1>
+                
+                <p class="hero-subtitle">
+                    Analyze any GitHub repository and automatically generate comprehensive onboarding tasks, 
+                    FAQs, and quick start guides using advanced AI.
+                </p>
+            </section>
 
-    <!-- Features Section -->
-    <section id="features" class="py-16 bg-white">
-        <div class="container mx-auto px-6">
-            <h3 class="text-3xl font-bold text-center text-gray-800 mb-12">Features</h3>
-            <div class="grid md:grid-cols-3 gap-8">
-                <div class="card-hover bg-gray-50 p-6 rounded-lg">
-                    <div class="text-blue-600 text-3xl mb-4">
-                        <i class="fas fa-brain"></i>
-                    </div>
-                    <h4 class="text-xl font-semibold mb-3">AI-Powered Analysis</h4>
-                    <p class="text-gray-600">
-                        Advanced AI analyzes repository content to understand project structure, 
-                        dependencies, and setup requirements automatically.
+            <!-- Demo Section -->
+            <section class="demo-section" id="demo">
+                <div class="demo-header">
+                    <h2 class="demo-title">Try SpecOps Demo</h2>
+                    <p class="demo-description">
+                        Enter any GitHub repository URL to generate comprehensive onboarding materials
                     </p>
                 </div>
-                <div class="card-hover bg-gray-50 p-6 rounded-lg">
-                    <div class="text-green-600 text-3xl mb-4">
-                        <i class="fas fa-tasks"></i>
-                    </div>
-                    <h4 class="text-xl font-semibold mb-3">Structured Tasks</h4>
-                    <p class="text-gray-600">
-                        Generates step-by-step onboarding tasks with clear objectives, 
-                        prerequisites, and acceptance criteria.
-                    </p>
-                </div>
-                <div class="card-hover bg-gray-50 p-6 rounded-lg">
-                    <div class="text-purple-600 text-3xl mb-4">
-                        <i class="fas fa-question-circle"></i>
-                    </div>
-                    <h4 class="text-xl font-semibold mb-3">Smart FAQs</h4>
-                    <p class="text-gray-600">
-                        Automatically generates comprehensive FAQs addressing common 
-                        questions new developers might have.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
 
-    <!-- Demo Section -->
-    <section id="demo" class="py-16 bg-gray-50">
-        <div class="container mx-auto px-6">
-            <h3 class="text-3xl font-bold text-center text-gray-800 mb-12">Try SpecOps</h3>
-            
-            <!-- Repository Input -->
-            <div class="max-w-4xl mx-auto">
-                <div class="bg-white rounded-lg shadow-lg p-8">
-                    <div class="mb-6">
-                        <label for="repoUrl" class="block text-sm font-medium text-gray-700 mb-2">
+                <!-- Repository Input -->
+                <div class="input-section">
+                    <div class="input-group">
+                        <label for="repoUrl" class="input-label">
                             GitHub Repository URL
                         </label>
-                        <div class="flex gap-4">
+                        <div class="input-row">
                             <input 
                                 type="url" 
                                 id="repoUrl" 
                                 placeholder="https://github.com/facebook/react"
-                                class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                class="input-field"
                                 value="https://github.com/facebook/react"
                             >
                             <button 
                                 onclick="analyzeRepository()" 
                                 id="analyzeBtn"
-                                class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors flex items-center"
+                                class="btn-primary"
                             >
-                                <i class="fas fa-search mr-2"></i>Analyze
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                                </svg>
+                                Analyze
                             </button>
                         </div>
-                        <p class="text-sm text-gray-500 mt-2">
-                            Enter any public GitHub repository URL to generate onboarding materials
-                        </p>
                     </div>
 
                     <!-- Popular Examples -->
-                    <div class="mb-8">
-                        <p class="text-sm font-medium text-gray-700 mb-3">Popular Examples:</p>
-                        <div class="flex flex-wrap gap-2">
-                            <button onclick="setRepo('https://github.com/facebook/react')" class="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition-colors">
+                    <div class="examples">
+                        <div class="examples-label">Popular Examples:</div>
+                        <div class="example-tags">
+                            <div class="example-tag" onclick="setRepo('https://github.com/facebook/react')">
                                 React
-                            </button>
-                            <button onclick="setRepo('https://github.com/microsoft/vscode')" class="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition-colors">
+                            </div>
+                            <div class="example-tag" onclick="setRepo('https://github.com/microsoft/vscode')">
                                 VS Code
-                            </button>
-                            <button onclick="setRepo('https://github.com/python/cpython')" class="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition-colors">
+                            </div>
+                            <div class="example-tag" onclick="setRepo('https://github.com/python/cpython')">
                                 Python
-                            </button>
-                            <button onclick="setRepo('https://github.com/tensorflow/tensorflow')" class="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition-colors">
+                            </div>
+                            <div class="example-tag" onclick="setRepo('https://github.com/tensorflow/tensorflow')">
                                 TensorFlow
-                            </button>
+                            </div>
                         </div>
                     </div>
                     
                     <!-- AI Provider Configuration -->
-                    <div class="border-t pt-6 mt-6">
-                        <h4 class="text-lg font-semibold text-gray-800 mb-4">🤖 AI Configuration</h4>
+                    <div class="ai-config">
+                        <div class="ai-config-title">
+                            🤖 AI Configuration
+                        </div>
                         
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                            <div>
-                                <label for="aiProvider" class="block text-sm font-medium text-gray-700 mb-2">
+                        <div class="config-grid">
+                            <div class="input-group">
+                                <label for="aiProvider" class="input-label">
                                     AI Provider
                                 </label>
                                 <select 
                                     id="aiProvider" 
                                     onchange="updateProviderOptions()"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    class="input-field"
                                 >
                                     <option value="mock">🎭 Demo Mode (No API Key Required)</option>
                                     <option value="openai">🤖 OpenAI ChatGPT</option>
@@ -354,154 +906,145 @@
                                 </select>
                             </div>
                             
-                            <div>
-                                <label for="aiModel" class="block text-sm font-medium text-gray-700 mb-2">
+                            <div class="input-group">
+                                <label for="aiModel" class="input-label">
                                     Model
                                 </label>
                                 <select 
                                     id="aiModel"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    class="input-field"
                                 >
                                     <option value="mock-model">Mock Model</option>
                                 </select>
                             </div>
                         </div>
                         
-                        <div id="apiKeySection" class="mb-4 hidden">
-                            <label for="apiKey" class="block text-sm font-medium text-gray-700 mb-2">
+                        <div id="apiKeySection" class="input-group" style="display: none;">
+                            <label for="apiKey" class="input-label">
                                 <span id="apiKeyLabel">API Key</span>
-                                <span class="text-xs text-gray-500 ml-2">(stored locally, not sent to our servers)</span>
+                                <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal;">(stored locally, not sent to our servers)</span>
                             </label>
                             <input 
                                 type="password" 
                                 id="apiKey" 
                                 placeholder="Enter your API key"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                class="input-field"
                             >
                         </div>
                         
-                        <div id="providerDescription" class="text-sm text-gray-600 bg-blue-50 p-3 rounded-lg">
+                        <div id="providerDescription" class="provider-description">
                             🎭 Demo mode uses realistic mock data for testing the interface.
                         </div>
                     </div>
+                </div>
 
-                    <!-- Loading State -->
-                    <div id="loadingState" class="hidden text-center py-8">
-                        <div class="loading-spinner mx-auto mb-4"></div>
-                        <p class="text-gray-600">Analyzing repository...</p>
-                        <p class="text-sm text-gray-500 mt-2">This may take a moment for large repositories</p>
+                <!-- Loading State -->
+                <div id="loadingState" class="loading-state" style="display: none;">
+                    <div class="loading-spinner"></div>
+                    <div style="font-size: 1.125rem; font-weight: 500; margin-bottom: 0.5rem;">Analyzing repository...</div>
+                    <div style="font-size: 0.875rem; color: var(--text-secondary);">This may take a moment for large repositories</div>
+                </div>
+
+                <!-- Results -->
+                <div id="results" class="results-section" style="display: none;">
+                    <!-- Analysis Summary -->
+                    <div class="results-summary">
+                        <div class="summary-title">✅ Analysis Complete!</div>
+                        <div id="analysisSummary" class="summary-grid"></div>
                     </div>
 
-                    <!-- Results -->
-                    <div id="results" class="hidden">
-                        <!-- Analysis Summary -->
-                        <div class="mb-8 p-4 bg-blue-50 rounded-lg">
-                            <h4 class="font-semibold text-blue-800 mb-2">Analysis Complete!</h4>
-                            <div id="analysisSummary" class="text-sm text-blue-700"></div>
+                    <!-- Generated Documents Tabs -->
+                    <div class="tabs">
+                        <div class="tab-list">
+                            <button onclick="showTab('tasks')" id="tasksTab" class="tab-button active">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                                </svg>
+                                Tasks
+                            </button>
+                            <button onclick="showTab('faq')" id="faqTab" class="tab-button">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M10,19H13V22H10V19M12,2C17.35,2.22 19.68,7.62 16.5,11.67C15.67,12.67 14.33,13.33 13.67,14.17C13,15 13,16 13,17H10C10,15.33 10,13.92 10.67,12.92C11.33,11.92 12.67,11.33 13.5,10.67C15.92,8.43 15.32,5.26 12,5A3,3 0 0,0 9,8H6A6,6 0 0,1 12,2Z"/>
+                                </svg>
+                                FAQ
+                            </button>
+                            <button onclick="showTab('quickstart')" id="quickstartTab" class="tab-button">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4L19.07,7.75L15.7,10.33L12,8.58L8.3,10.33L4.93,7.75L12,4M7.5,9.5L12,11.5L16.5,9.5V14.5L12,16.5L7.5,14.5V9.5Z"/>
+                                </svg>
+                                Quick Start
+                            </button>
                         </div>
+                    </div>
 
-                        <!-- Generated Documents Tabs -->
-                        <div class="border-b border-gray-200 mb-6">
-                            <nav class="-mb-px flex space-x-8">
-                                <button onclick="showTab('tasks')" id="tasksTab" class="tab-button py-2 px-1 border-b-2 border-blue-500 font-medium text-sm text-blue-600">
-                                    <i class="fas fa-tasks mr-2"></i>Tasks
-                                </button>
-                                <button onclick="showTab('faq')" id="faqTab" class="tab-button py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700">
-                                    <i class="fas fa-question-circle mr-2"></i>FAQ
-                                </button>
-                                <button onclick="showTab('quickstart')" id="quickstartTab" class="tab-button py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700">
-                                    <i class="fas fa-rocket mr-2"></i>Quick Start
-                                </button>
-                            </nav>
+                    <!-- Tab Content -->
+                    <div id="tabContent">
+                        <div id="tasksContent" class="tab-content active">
+                            <div class="content-header">
+                                <div class="content-title">Onboarding Tasks</div>
+                                <div class="content-actions">
+                                    <button onclick="copyContent('tasks')" class="btn-secondary">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"/>
+                                        </svg>
+                                        Copy
+                                    </button>
+                                    <button onclick="downloadContent('tasks')" class="btn-secondary">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z"/>
+                                        </svg>
+                                        Download
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="tasksMarkdown" class="generated-content"></div>
                         </div>
-
-                        <!-- Tab Content -->
-                        <div id="tabContent">
-                            <div id="tasksContent" class="tab-content">
-                                <div class="flex justify-between items-center mb-4">
-                                    <h4 class="text-lg font-semibold">Onboarding Tasks</h4>
-                                    <div class="flex gap-2">
-                                        <button onclick="copyContent('tasks')" class="text-sm bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-1 rounded transition-colors">
-                                            <i class="fas fa-copy mr-1"></i>Copy
-                                        </button>
-                                        <button onclick="downloadContent('tasks')" class="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded transition-colors">
-                                            <i class="fas fa-download mr-1"></i>Download
-                                        </button>
-                                    </div>
+                        <div id="faqContent" class="tab-content">
+                            <div class="content-header">
+                                <div class="content-title">FAQ</div>
+                                <div class="content-actions">
+                                    <button onclick="copyContent('faq')" class="btn-secondary">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"/>
+                                        </svg>
+                                        Copy
+                                    </button>
+                                    <button onclick="downloadContent('faq')" class="btn-secondary">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z"/>
+                                        </svg>
+                                        Download
+                                    </button>
                                 </div>
-                                <div id="tasksMarkdown" class="generated-content bg-white p-6 rounded-lg border border-gray-200 overflow-auto max-h-96"></div>
                             </div>
-                            <div id="faqContent" class="tab-content hidden">
-                                <div class="flex justify-between items-center mb-4">
-                                    <h4 class="text-lg font-semibold">FAQ</h4>
-                                    <div class="flex gap-2">
-                                        <button onclick="copyContent('faq')" class="text-sm bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-1 rounded transition-colors">
-                                            <i class="fas fa-copy mr-1"></i>Copy
-                                        </button>
-                                        <button onclick="downloadContent('faq')" class="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded transition-colors">
-                                            <i class="fas fa-download mr-1"></i>Download
-                                        </button>
-                                    </div>
+                            <div id="faqMarkdown" class="generated-content"></div>
+                        </div>
+                        <div id="quickstartContent" class="tab-content">
+                            <div class="content-header">
+                                <div class="content-title">Quick Start Guide</div>
+                                <div class="content-actions">
+                                    <button onclick="copyContent('quickstart')" class="btn-secondary">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"/>
+                                        </svg>
+                                        Copy
+                                    </button>
+                                    <button onclick="downloadContent('quickstart')" class="btn-secondary">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z"/>
+                                        </svg>
+                                        Download
+                                    </button>
                                 </div>
-                                <div id="faqMarkdown" class="generated-content bg-white p-6 rounded-lg border border-gray-200 overflow-auto max-h-96"></div>
                             </div>
-                            <div id="quickstartContent" class="tab-content hidden">
-                                <div class="flex justify-between items-center mb-4">
-                                    <h4 class="text-lg font-semibold">Quick Start Guide</h4>
-                                    <div class="flex gap-2">
-                                        <button onclick="copyContent('quickstart')" class="text-sm bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-1 rounded transition-colors">
-                                            <i class="fas fa-copy mr-1"></i>Copy
-                                        </button>
-                                        <button onclick="downloadContent('quickstart')" class="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded transition-colors">
-                                            <i class="fas fa-download mr-1"></i>Download
-                                        </button>
-                                    </div>
-                                </div>
-                                <div id="quickstartMarkdown" class="generated-content bg-white p-6 rounded-lg border border-gray-200 overflow-auto max-h-96"></div>
-                            </div>
+                            <div id="quickstartMarkdown" class="generated-content"></div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </section>
         </div>
-    </section>
+    </main>
 
-    <!-- Footer -->
-    <footer class="bg-gray-800 text-white py-12">
-        <div class="container mx-auto px-6">
-            <div class="grid md:grid-cols-3 gap-8">
-                <div>
-                    <div class="flex items-center space-x-2 mb-4">
-                        <i class="fas fa-rocket text-xl"></i>
-                        <span class="text-xl font-bold">SpecOps</span>
-                    </div>
-                    <p class="text-gray-400">
-                        AI-powered onboarding factory that automatically generates comprehensive 
-                        onboarding materials from repository content.
-                    </p>
-                </div>
-                <div>
-                    <h5 class="font-semibold mb-4">Links</h5>
-                    <ul class="space-y-2 text-gray-400">
-                        <li><a href="#" class="hover:text-white transition-colors">GitHub Repository</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">Documentation</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">API Reference</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h5 class="font-semibold mb-4">Contact</h5>
-                    <ul class="space-y-2 text-gray-400">
-                        <li><a href="#" class="hover:text-white transition-colors">Report Issues</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">Feature Requests</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">Contributing</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-                <p>&copy; 2024 SpecOps. Open source project.</p>
-            </div>
-        </div>
-    </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
