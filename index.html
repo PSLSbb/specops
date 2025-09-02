@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SpecOps - AI-Powered Onboarding Factory</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -11,155 +12,444 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #111111;
+            --bg-tertiary: #1a1a1a;
+            --bg-card: #161616;
+            --text-primary: #ffffff;
+            --text-secondary: #a1a1aa;
+            --text-muted: #71717a;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --border: #27272a;
+            --border-light: #3f3f46;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #0a0a0a;
-            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
             line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Background Pattern */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(245, 158, 11, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            font-size: 1.125rem;
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+
+        .logo-icon {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, var(--accent), var(--success));
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--text-primary);
+        }
+
+        .github-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+        }
+
+        .github-link:hover {
+            background: var(--bg-tertiary);
+            border-color: var(--border-light);
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 2rem;
         }
 
+        .main {
+            padding-top: 80px;
+            min-height: 100vh;
+        }
+
         .hero {
-            text-align: center;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
             padding: 4rem 0;
+            min-height: calc(100vh - 80px);
         }
 
-        .logo {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-        }
-
-        h1 {
-            font-size: 3rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            background: linear-gradient(135deg, #ffffff 0%, #3b82f6 50%, #10b981 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .subtitle {
-            font-size: 1.25rem;
-            color: #a1a1aa;
-            margin-bottom: 3rem;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .buttons {
+        .hero-content {
             display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-bottom: 3rem;
+            flex-direction: column;
+            gap: 2rem;
         }
 
-        .btn {
+        .hero-badge {
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            padding: 1rem 2rem;
-            background: #3b82f6;
+            padding: 0.5rem 1rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            width: fit-content;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            line-height: 1.1;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent) 50%, var(--success) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .install-command {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.875rem;
+        }
+
+        .command-text {
+            color: var(--text-secondary);
+            flex: 1;
+        }
+
+        .copy-btn {
+            padding: 0.25rem 0.5rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.75rem;
+        }
+
+        .copy-btn:hover {
+            background: var(--border);
+            color: var(--text-primary);
+        }
+
+        /* Code Demo */
+        .code-demo {
+            position: relative;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .code-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-tertiary);
+        }
+
+        .code-tabs {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .code-tab {
+            padding: 0.25rem 0.75rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .code-tab.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .demo-btn {
+            padding: 0.5rem 1rem;
+            background: var(--success);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .demo-btn:hover {
+            background: #059669;
+        }
+
+        .code-content {
+            padding: 1.5rem;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            overflow-x: auto;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--accent);
             color: white;
             text-decoration: none;
             border-radius: 8px;
             font-weight: 500;
             transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 0.875rem;
         }
 
-        .btn:hover {
-            background: #2563eb;
-            transform: translateY(-2px);
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
         }
 
         .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
             background: transparent;
-            border: 1px solid #3f3f46;
+            color: var(--text-primary);
+            text-decoration: none;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            font-size: 0.875rem;
         }
 
         .btn-secondary:hover {
-            background: #1a1a1a;
+            background: var(--bg-secondary);
+            border-color: var(--border-light);
         }
 
+        /* Features Grid */
         .features {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        .features-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 2rem;
-            margin-top: 4rem;
+            margin-top: 3rem;
         }
 
-        .feature {
-            background: #111111;
-            border: 1px solid #27272a;
-            border-radius: 12px;
+        .feature-card {
             padding: 2rem;
-            text-align: center;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .feature-card:hover {
+            border-color: var(--border-light);
+            transform: translateY(-2px);
         }
 
         .feature-icon {
-            font-size: 2rem;
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--accent), var(--success));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             margin-bottom: 1rem;
+            font-size: 1.5rem;
         }
 
-        .feature h3 {
+        .feature-title {
             font-size: 1.25rem;
-            margin-bottom: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
         }
 
-        .feature p {
-            color: #a1a1aa;
+        .feature-description {
+            color: var(--text-secondary);
+            line-height: 1.6;
         }
 
+        /* Demo Section */
         .demo-section {
-            background: #111111;
-            border: 1px solid #27272a;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
             border-radius: 16px;
             padding: 2rem;
             margin: 4rem 0;
         }
 
-        .demo-title {
+        .demo-header {
             text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .demo-title {
             font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .demo-description {
+            color: var(--text-secondary);
+        }
+
+        .input-section {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
             margin-bottom: 2rem;
         }
 
         .input-group {
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
         }
 
-        .input-group label {
+        .input-label {
             display: block;
-            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
             font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
         }
 
-        .input-group input {
+        .input-field {
             width: 100%;
-            padding: 0.75rem;
-            background: #0a0a0a;
-            border: 1px solid #27272a;
+            padding: 0.75rem 1rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
             border-radius: 8px;
-            color: white;
-            font-size: 1rem;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
         }
 
-        .input-group input:focus {
+        .input-field:focus {
             outline: none;
-            border-color: #3b82f6;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .input-field::placeholder {
+            color: var(--text-muted);
         }
 
         .analyze-btn {
             width: 100%;
             padding: 1rem;
-            background: #10b981;
+            background: var(--success);
             color: white;
             border: none;
             border-radius: 8px;
@@ -169,141 +459,1194 @@
             transition: all 0.2s ease;
         }
 
-        .analyze-btn:hover {
+        .analyze-btn:hover:not(:disabled) {
             background: #059669;
         }
 
-        .results {
-            margin-top: 2rem;
-            padding: 2rem;
-            background: #0a0a0a;
-            border: 1px solid #27272a;
-            border-radius: 8px;
+        .analyze-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Loading State */
+        .loading-state {
+            text-align: center;
+            padding: 3rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin: 2rem 0;
             display: none;
         }
 
-        .results.show {
+        .loading-state.show {
             display: block;
         }
 
+        .loading-spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid var(--border);
+            border-top: 3px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Results Section */
+        .results-section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-top: 2rem;
+            display: none;
+        }
+
+        .results-section.show {
+            display: block;
+        }
+
+        .results-summary {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .summary-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--success);
+            margin-bottom: 1rem;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            text-align: center;
+        }
+
+        .summary-item {
+            padding: 1rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        .summary-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .summary-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* Tabs */
+        .tabs {
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2rem;
+        }
+
+        .tab-list {
+            display: flex;
+            gap: 0;
+        }
+
+        .tab-button {
+            padding: 1rem 1.5rem;
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tab-button.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .tab-button:hover:not(.active) {
+            color: var(--text-primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .generated-content {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            max-height: 600px;
+            overflow-y: auto;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+        }
+
+        .generated-content h2 {
+            font-size: 1.375rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            padding: 0.75rem 1rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            border-left: 4px solid var(--accent);
+        }
+
+        .generated-content h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .generated-content p {
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .generated-content ul, .generated-content ol {
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+        }
+
+        .generated-content li {
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        .generated-content code {
+            background: var(--bg-primary);
+            color: var(--warning);
+            padding: 0.125rem 0.375rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.875rem;
+            border: 1px solid var(--border);
+        }
+
+        .task-section {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .difficulty-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .difficulty-beginner {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .difficulty-intermediate {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .difficulty-advanced {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        /* Mobile Menu */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.25rem;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .mobile-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(12px);
+            border-top: 1px solid var(--border);
+            padding: 1rem 2rem;
+        }
+
+        .mobile-menu.show {
+            display: block;
+        }
+
+        .mobile-nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .hero {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+                text-align: center;
+                padding: 3rem 0;
+            }
+
+            .code-demo {
+                max-width: 600px;
+                margin: 0 auto;
+            }
+        }
+
         @media (max-width: 768px) {
+            .nav {
+                padding: 1rem;
+                position: relative;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
             .container {
                 padding: 1rem;
             }
 
-            h1 {
+            .hero {
+                padding: 2rem 0;
+            }
+
+            .hero-title {
+                font-size: 2.5rem;
+                line-height: 1.2;
+            }
+
+            .hero-subtitle {
+                font-size: 1.125rem;
+            }
+
+            .hero-actions {
+                flex-direction: column;
+                align-items: center;
+                gap: 0.75rem;
+            }
+
+            .btn-primary, .btn-secondary {
+                width: 100%;
+                max-width: 280px;
+                justify-content: center;
+            }
+
+            .install-command {
+                flex-direction: column;
+                gap: 0.75rem;
+                text-align: center;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .feature-card {
+                padding: 1.5rem;
+            }
+
+            .demo-section {
+                padding: 1.5rem;
+            }
+
+            .input-section {
+                padding: 1rem;
+            }
+
+            .summary-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 0.75rem;
+            }
+
+            .tab-list {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+            }
+
+            .tab-list::-webkit-scrollbar {
+                display: none;
+            }
+
+            .tab-button {
+                white-space: nowrap;
+                min-width: fit-content;
+            }
+
+            .generated-content {
+                padding: 1rem;
+                font-size: 0.875rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-title {
                 font-size: 2rem;
             }
 
-            .buttons {
-                flex-direction: column;
-                align-items: center;
+            .hero-badge {
+                font-size: 0.8rem;
+                padding: 0.4rem 0.8rem;
             }
 
-            .btn {
-                width: 100%;
-                max-width: 300px;
-                justify-content: center;
+            .code-demo {
+                margin: 0 -1rem;
+                border-radius: 0;
             }
+
+            .feature-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 1.25rem;
+            }
+
+            .demo-section {
+                padding: 1rem;
+                margin: 2rem 0;
+            }
+
+            .input-section {
+                padding: 0.75rem;
+            }
+
+            .results-section {
+                padding: 1rem;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+
+            .summary-item {
+                padding: 0.75rem;
+            }
+
+            .generated-content {
+                max-height: 400px;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-light);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Hero Section -->
-        <section class="hero">
-            <div class="logo">⚡</div>
-            <h1>SpecOps</h1>
-            <p class="subtitle">
-                AI-powered onboarding framework for developers. Generate comprehensive onboarding materials from any GitHub repository using AI.
-            </p>
-            
-            <div class="buttons">
-                <a href="#demo" class="btn">🚀 Try Demo</a>
-                <a href="https://github.com/PSLSbb/specops" class="btn btn-secondary">📱 GitHub</a>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <a href="#" class="logo">
+                <div class="logo-icon">⚡</div>
+                SpecOps
+            </a>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div class="nav-links">
+                    <a href="#features" class="nav-link">Features</a>
+                    <a href="#demo" class="nav-link">Demo</a>
+                    <a href="#" class="nav-link">Docs</a>
+                    <a href="#" class="nav-link">Examples</a>
+                </div>
+                <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z"/>
+                    </svg>
+                </button>
+                <a href="https://github.com/PSLSbb/specops" class="github-link">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.30.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    </svg>
+                    GitHub
+                </a>
+            </div>
+            <div class="mobile-menu" id="mobileMenu">
+                <div class="mobile-nav-links">
+                    <a href="#features" class="nav-link" onclick="toggleMobileMenu()">Features</a>
+                    <a href="#demo" class="nav-link" onclick="toggleMobileMenu()">Demo</a>
+                    <a href="#" class="nav-link" onclick="toggleMobileMenu()">Docs</a>
+                    <a href="#" class="nav-link" onclick="toggleMobileMenu()">Examples</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <!-- Hero Section -->
+            <section class="hero">
+                <div class="hero-content">
+                    <div class="hero-badge">
+                        🚀 Introducing SpecOps Infrastructure
+                        <span style="color: var(--accent);">Join the waitlist →</span>
+                    </div>
+                    
+                    <h1 class="hero-title">
+                        AI-powered onboarding framework for developers.
+                    </h1>
+                    
+                    <p class="hero-subtitle">
+                        Generate comprehensive onboarding materials from any GitHub repository using AI. Transform complex codebases into clear, actionable developer guides.
+                    </p>
+
+                    <div class="hero-actions">
+                        <a href="#demo" class="btn-primary">
+                            Get Started
+                        </a>
+                        <a href="#features" class="btn-secondary">
+                            + Learn More
+                        </a>
+                    </div>
+
+                    <div class="install-command">
+                        <span class="command-text">pip install specops</span>
+                        <button class="copy-btn" onclick="copyCommand()">Copy</button>
+                    </div>
+                </div>
+
+                <div class="code-demo">
+                    <div class="code-header">
+                        <div class="code-tabs">
+                            <div class="code-tab active">specops.py</div>
+                            <div class="code-tab">output.md</div>
+                        </div>
+                        <button class="demo-btn" onclick="runCodeDemo()">▶ Demo</button>
+                    </div>
+                    <div class="code-content">
+<pre><code class="language-python">from specops import SpecOps
+
+# Initialize SpecOps with your preferred AI provider
+specops = SpecOps(
+    provider="openai",
+    api_key="your-api-key"
+)
+
+# Analyze any GitHub repository
+analysis = specops.analyze_repository(
+    url="https://github.com/facebook/react"
+)
+
+# Generate comprehensive onboarding materials
+docs = specops.generate_all_documents(analysis)
+
+print(f"Generated {len(docs)} onboarding documents")
+# Output: Generated 3 onboarding documents</code></pre>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Features Section -->
+        <section class="features" id="features">
+            <div style="text-align: center; margin-bottom: 3rem;">
+                <h2 style="font-size: 2.25rem; font-weight: 700; margin-bottom: 1rem; background: linear-gradient(135deg, var(--text-primary), var(--text-secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                    Everything you need to onboard developers
+                </h2>
+                <p style="font-size: 1.125rem; color: var(--text-secondary); max-width: 600px; margin: 0 auto; line-height: 1.6;">
+                    SpecOps analyzes your codebase and generates comprehensive onboarding materials automatically.
+                </p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🧠</div>
+                    <h3 class="feature-title">AI-Powered Analysis</h3>
+                    <p class="feature-description">
+                        Advanced AI analyzes repository structure, dependencies, and patterns to understand your project deeply and generate relevant onboarding content.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📋</div>
+                    <h3 class="feature-title">Structured Tasks</h3>
+                    <p class="feature-description">
+                        Generate step-by-step onboarding tasks with clear objectives, prerequisites, acceptance criteria, and difficulty levels.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">❓</div>
+                    <h3 class="feature-title">Smart FAQs</h3>
+                    <p class="feature-description">
+                        Automatically create comprehensive FAQs addressing common questions, troubleshooting, and best practices for your project.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🚀</div>
+                    <h3 class="feature-title">Quick Start Guides</h3>
+                    <p class="feature-description">
+                        Generate detailed quick-start guides with installation instructions, basic usage examples, and next steps.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🔧</div>
+                    <h3 class="feature-title">Multiple AI Providers</h3>
+                    <p class="feature-description">
+                        Support for OpenAI, Anthropic, Google AI, OpenRouter, and Groq. Switch providers easily or use mock data for testing.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3 class="feature-title">CLI & Web Interface</h3>
+                    <p class="feature-description">
+                        Use SpecOps from the command line for automation or through our beautiful web interface for interactive analysis.
+                    </p>
+                </div>
             </div>
         </section>
 
-        <!-- Features -->
-        <section class="features">
-            <div class="feature">
-                <div class="feature-icon">🧠</div>
-                <h3>AI-Powered Analysis</h3>
-                <p>Advanced AI analyzes repository structure and generates relevant onboarding content.</p>
-            </div>
-            
-            <div class="feature">
-                <div class="feature-icon">📋</div>
-                <h3>Structured Tasks</h3>
-                <p>Generate step-by-step onboarding tasks with clear objectives and acceptance criteria.</p>
-            </div>
-            
-            <div class="feature">
-                <div class="feature-icon">❓</div>
-                <h3>Smart FAQs</h3>
-                <p>Automatically create comprehensive FAQs addressing common questions and troubleshooting.</p>
-            </div>
-        </section>
+        <div class="container">
 
-        <!-- Demo Section -->
-        <section class="demo-section" id="demo">
-            <h2 class="demo-title">Try SpecOps Demo</h2>
-            
-            <div class="input-group">
-                <label for="repoUrl">GitHub Repository URL</label>
-                <input 
-                    type="url" 
-                    id="repoUrl" 
-                    placeholder="https://github.com/facebook/react"
-                    value="https://github.com/facebook/react"
-                >
-            </div>
-            
-            <button class="analyze-btn" onclick="analyzeRepo()">
-                🔍 Analyze Repository
-            </button>
-            
-            <div class="results" id="results">
-                <h3>✅ Analysis Complete!</h3>
-                <p>Generated comprehensive onboarding materials for the repository.</p>
-                <ul>
-                    <li>📋 5 onboarding tasks created</li>
-                    <li>❓ 8 FAQ items generated</li>
-                    <li>🚀 Quick start guide ready</li>
-                </ul>
-            </div>
-        </section>
-    </div>
+            <!-- Demo Section -->
+            <section class="demo-section" id="demo">
+                <div class="demo-header">
+                    <h2 class="demo-title">Try SpecOps Demo</h2>
+                    <p class="demo-description">
+                        Enter any GitHub repository URL to generate comprehensive onboarding materials
+                    </p>
+                </div>
 
+                <div class="input-section">
+                    <div class="input-group">
+                        <label for="repoUrl" class="input-label">
+                            GitHub Repository URL
+                        </label>
+                        <input 
+                            type="url" 
+                            id="repoUrl" 
+                            placeholder="https://github.com/facebook/react"
+                            class="input-field"
+                            value="https://github.com/facebook/react"
+                        >
+                    </div>
+                    
+                    <button class="analyze-btn" onclick="analyzeRepository()" id="analyzeBtn">
+                        🔍 Analyze Repository
+                    </button>
+                </div>
+
+                <!-- Loading State -->
+                <div class="loading-state" id="loadingState">
+                    <div class="loading-spinner"></div>
+                    <h3>Analyzing Repository...</h3>
+                    <p>AI is processing the codebase and generating onboarding materials</p>
+                </div>
+
+                <!-- Results Section -->
+                <div class="results-section" id="resultsSection">
+                    <div class="results-summary">
+                        <h3 class="summary-title">✅ Analysis Complete!</h3>
+                        <div class="summary-grid">
+                            <div class="summary-item">
+                                <div class="summary-number" id="tasksCount">5</div>
+                                <div class="summary-label">Tasks</div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-number" id="faqCount">8</div>
+                                <div class="summary-label">FAQ Items</div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-number" id="guidesCount">1</div>
+                                <div class="summary-label">Quick Start</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabs -->
+                    <div class="tabs">
+                        <div class="tab-list">
+                            <button class="tab-button active" onclick="showTab('tasks')">
+                                📋 Tasks
+                            </button>
+                            <button class="tab-button" onclick="showTab('faq')">
+                                ❓ FAQ
+                            </button>
+                            <button class="tab-button" onclick="showTab('quickstart')">
+                                🚀 Quick Start
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Tab Contents -->
+                    <div class="tab-content active" id="tasks-content">
+                        <div class="generated-content" id="tasksOutput">
+                            <!-- Tasks will be generated here -->
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="faq-content">
+                        <div class="generated-content" id="faqOutput">
+                            <!-- FAQ will be generated here -->
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="quickstart-content">
+                        <div class="generated-content" id="quickstartOutput">
+                            <!-- Quick start will be generated here -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
     <script>
-        function analyzeRepo() {
-            const btn = document.querySelector('.analyze-btn');
-            const results = document.getElementById('results');
+        // Sample data for different repositories
+        const sampleData = {
+            'facebook/react': {
+                tasks: `## Onboarding Tasks for React
+
+### Task 1: Environment Setup
+**Difficulty:** Beginner
+**Estimated Time:** 30 minutes
+
+Set up your development environment for React development.
+
+**Prerequisites:**
+- Node.js 14+ installed
+- Basic JavaScript knowledge
+- Git installed
+
+**Objectives:**
+- Install Node.js and npm
+- Set up a code editor (VS Code recommended)
+- Clone the React repository
+- Install dependencies
+
+**Acceptance Criteria:**
+- [ ] Node.js version 14+ is installed
+- [ ] React repository is cloned locally
+- [ ] All dependencies are installed successfully
+- [ ] Development server starts without errors
+
+### Task 2: Understanding React Architecture
+**Difficulty:** Intermediate
+**Estimated Time:** 2 hours
+
+Learn about React's core architecture and component system.
+
+**Prerequisites:**
+- Completed Task 1
+- Basic understanding of JavaScript ES6+
+
+**Objectives:**
+- Understand React components and JSX
+- Learn about props and state
+- Explore the virtual DOM concept
+- Study React's reconciliation algorithm
+
+**Acceptance Criteria:**
+- [ ] Can explain what JSX is and how it works
+- [ ] Understands the difference between props and state
+- [ ] Can describe the virtual DOM benefits
+- [ ] Has read React's reconciliation documentation
+
+### Task 3: Building Your First Component
+**Difficulty:** Beginner
+**Estimated Time:** 1 hour
+
+Create your first React component and understand the basics.
+
+**Prerequisites:**
+- Completed Tasks 1-2
+- Understanding of HTML and CSS
+
+**Objectives:**
+- Create a functional component
+- Add props to components
+- Style components with CSS
+- Handle basic events
+
+**Acceptance Criteria:**
+- [ ] Created a working functional component
+- [ ] Component accepts and uses props
+- [ ] Component has basic styling
+- [ ] Component handles at least one user interaction`,
+
+                faq: `## Frequently Asked Questions - React
+
+### Getting Started
+
+**Q: What is React?**
+A: React is a JavaScript library for building user interfaces, particularly web applications. It was developed by Facebook and is now maintained by Meta and the open-source community.
+
+**Q: Do I need to know JavaScript before learning React?**
+A: Yes, you should have a solid understanding of JavaScript, including ES6+ features like arrow functions, destructuring, modules, and promises.
+
+**Q: What's the difference between React and other frameworks like Vue or Angular?**
+A: React is a library focused on the view layer, while Angular is a full framework. Vue is similar to React but has a different approach to reactivity and templates.
+
+### Development
+
+**Q: What is JSX?**
+A: JSX is a syntax extension for JavaScript that allows you to write HTML-like code in your JavaScript files. It gets compiled to regular JavaScript function calls.
+
+**Q: Should I use functional components or class components?**
+A: Use functional components with hooks. Class components are legacy and only needed for specific edge cases or when working with older codebases.
+
+**Q: What are React Hooks?**
+A: Hooks are functions that let you use state and other React features in functional components. Common hooks include useState, useEffect, and useContext.
+
+### Performance
+
+**Q: How do I optimize React performance?**
+A: Use React.memo for component memoization, useMemo and useCallback for expensive calculations, lazy loading with React.lazy, and proper key props in lists.
+
+**Q: What is the Virtual DOM?**
+A: The Virtual DOM is a JavaScript representation of the actual DOM. React uses it to efficiently update the UI by comparing (diffing) the virtual DOM trees and only updating what changed.
+
+### Troubleshooting
+
+**Q: Why is my component not re-rendering?**
+A: Common causes include mutating state directly, not using the state setter function, or dependency arrays in hooks not including all dependencies.
+
+**Q: How do I handle errors in React?**
+A: Use Error Boundaries to catch JavaScript errors in component trees, and try-catch blocks for async operations in useEffect or event handlers.`,
+
+                quickstart: `# React Quick Start Guide
+
+## Installation
+
+### Prerequisites
+- Node.js 14.0 or later
+- npm or yarn package manager
+
+### Create a New React App
+
+\`\`\`bash
+# Using Create React App
+npx create-react-app my-app
+cd my-app
+npm start
+\`\`\`
+
+### Alternative: Using Vite (Faster)
+
+\`\`\`bash
+# Using Vite
+npm create vite@latest my-react-app -- --template react
+cd my-react-app
+npm install
+npm run dev
+\`\`\`
+
+## Basic Usage
+
+### Your First Component
+
+\`\`\`jsx
+// src/components/Welcome.js
+import React from 'react';
+
+function Welcome({ name }) {
+  return (
+    <div>
+      <h1>Hello, {name}!</h1>
+      <p>Welcome to React!</p>
+    </div>
+  );
+}
+
+export default Welcome;
+\`\`\`
+
+### Using the Component
+
+\`\`\`jsx
+// src/App.js
+import React from 'react';
+import Welcome from './components/Welcome';
+
+function App() {
+  return (
+    <div className="App">
+      <Welcome name="Developer" />
+    </div>
+  );
+}
+
+export default App;
+\`\`\`
+
+### Adding State
+
+\`\`\`jsx
+import React, { useState } from 'react';
+
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <div>
+      <p>You clicked {count} times</p>
+      <button onClick={() => setCount(count + 1)}>
+        Click me
+      </button>
+    </div>
+  );
+}
+\`\`\`
+
+## Next Steps
+
+1. **Learn Hooks**: Start with useState and useEffect
+2. **Component Composition**: Break your UI into reusable components  
+3. **State Management**: Learn about Context API or Redux
+4. **Routing**: Add React Router for navigation
+5. **Testing**: Write tests with Jest and React Testing Library
+
+## Useful Resources
+
+- [Official React Documentation](https://reactjs.org/docs)
+- [React Tutorial](https://reactjs.org/tutorial/tutorial.html)
+- [Create React App Documentation](https://create-react-app.dev/)
+- [React DevTools](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi)`
+            },
+            'microsoft/vscode': {
+                tasks: `## Onboarding Tasks for VS Code
+
+### Task 1: Development Environment Setup
+**Difficulty:** Beginner
+**Estimated Time:** 45 minutes
+
+Set up your development environment for VS Code contribution.
+
+**Prerequisites:**
+- Git installed
+- Node.js 16+ installed
+- Basic TypeScript knowledge
+
+**Objectives:**
+- Clone the VS Code repository
+- Install dependencies
+- Build the project
+- Run VS Code from source
+
+**Acceptance Criteria:**
+- [ ] Repository cloned successfully
+- [ ] All dependencies installed
+- [ ] Project builds without errors
+- [ ] Can run VS Code from source code
+
+### Task 2: Understanding the Architecture
+**Difficulty:** Advanced
+**Estimated Time:** 3 hours
+
+Learn about VS Code's architecture and extension system.
+
+**Prerequisites:**
+- Completed Task 1
+- Understanding of Electron
+- TypeScript knowledge
+
+**Objectives:**
+- Understand the main process vs renderer process
+- Learn about the extension host
+- Study the workbench architecture
+- Explore the Monaco Editor integration
+
+**Acceptance Criteria:**
+- [ ] Can explain VS Code's process architecture
+- [ ] Understands how extensions are loaded
+- [ ] Familiar with workbench components
+- [ ] Knows how Monaco Editor is integrated`,
+
+                faq: `## VS Code FAQ
+
+### Development
+
+**Q: What technologies does VS Code use?**
+A: VS Code is built with Electron, TypeScript, and uses the Monaco Editor for text editing functionality.
+
+**Q: How do I build VS Code from source?**
+A: Clone the repository, run \`yarn\` to install dependencies, then \`yarn watch\` to build and \`./scripts/code.sh\` to run.
+
+**Q: Can I contribute to VS Code?**
+A: Yes! VS Code is open source. Check the contributing guidelines and look for "good first issue" labels.
+
+### Extensions
+
+**Q: How do I create a VS Code extension?**
+A: Use the Yeoman generator: \`npm install -g yo generator-code\` then \`yo code\` to scaffold a new extension.
+
+**Q: What's the difference between VS Code and VS Code Insiders?**
+A: VS Code Insiders is the daily build with the latest features, while regular VS Code is the stable monthly release.`,
+
+                quickstart: `# VS Code Development Quick Start
+
+## Setup
+
+\`\`\`bash
+git clone https://github.com/Microsoft/vscode.git
+cd vscode
+yarn
+yarn watch
+\`\`\`
+
+## Running
+
+\`\`\`bash
+# On macOS/Linux
+./scripts/code.sh
+
+# On Windows
+.\\scripts\\code.bat
+\`\`\`
+
+## Building Extensions
+
+\`\`\`bash
+npm install -g yo generator-code
+yo code
+\`\`\`
+
+## Next Steps
+
+1. Read the [contributing guide](https://github.com/Microsoft/vscode/blob/main/CONTRIBUTING.md)
+2. Explore the [extension API](https://code.visualstudio.com/api)
+3. Join the [VS Code community](https://github.com/Microsoft/vscode/discussions)`
+            }
+        };
+
+        // Current active tab
+        let activeTab = 'tasks';
+
+        // Tab switching functionality
+        function showTab(tabName) {
+            // Remove active class from all tabs and contents
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
             
-            // Show loading state
-            btn.textContent = '⏳ Analyzing...';
-            btn.disabled = true;
+            // Add active class to selected tab and content
+            document.querySelector(`[onclick="showTab('${tabName}')"]`).classList.add('active');
+            document.getElementById(`${tabName}-content`).classList.add('active');
             
-            // Simulate analysis
-            setTimeout(() => {
-                btn.textContent = '✅ Complete!';
-                results.classList.add('show');
+            activeTab = tabName;
+        }
+
+        // Copy command functionality
+        function copyCommand() {
+            navigator.clipboard.writeText('pip install specops').then(() => {
+                const btn = document.querySelector('.copy-btn');
+                const originalText = btn.textContent;
+                btn.textContent = 'Copied!';
+                btn.style.background = 'var(--success)';
+                btn.style.color = 'white';
                 
                 setTimeout(() => {
-                    btn.textContent = '🔍 Analyze Repository';
+                    btn.textContent = originalText;
+                    btn.style.background = 'var(--bg-tertiary)';
+                    btn.style.color = 'var(--text-secondary)';
+                }, 2000);
+            });
+        }
+
+        // Code demo functionality
+        function runCodeDemo() {
+            const btn = document.querySelector('.demo-btn');
+            const originalText = btn.textContent;
+            btn.textContent = '⏳ Running...';
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                btn.textContent = '✅ Complete';
+                setTimeout(() => {
+                    btn.textContent = originalText;
                     btn.disabled = false;
                 }, 2000);
             }, 3000);
         }
 
-        // Smooth scrolling
+        // Main repository analysis functionality
+        function analyzeRepository() {
+            const btn = document.getElementById('analyzeBtn');
+            const loadingState = document.getElementById('loadingState');
+            const resultsSection = document.getElementById('resultsSection');
+            const repoUrl = document.getElementById('repoUrl').value;
+            
+            // Extract repo name from URL
+            const repoMatch = repoUrl.match(/github\.com\/([^\/]+\/[^\/]+)/);
+            const repoName = repoMatch ? repoMatch[1] : 'facebook/react';
+            
+            // Show loading state
+            btn.textContent = '⏳ Analyzing...';
+            btn.disabled = true;
+            loadingState.classList.add('show');
+            resultsSection.classList.remove('show');
+            
+            // Simulate analysis time
+            setTimeout(() => {
+                // Hide loading state
+                loadingState.classList.remove('show');
+                
+                // Generate content based on repository
+                generateContent(repoName);
+                
+                // Show results
+                resultsSection.classList.add('show');
+                
+                // Reset button
+                btn.textContent = '🔍 Analyze Repository';
+                btn.disabled = false;
+                
+                // Scroll to results
+                resultsSection.scrollIntoView({ behavior: 'smooth' });
+            }, 4000);
+        }
+
+        function generateContent(repoName) {
+            const data = sampleData[repoName] || sampleData['facebook/react'];
+            
+            // Update counts
+            const taskCount = (data.tasks.match(/### Task/g) || []).length;
+            const faqCount = (data.faq.match(/\*\*Q:/g) || []).length;
+            
+            document.getElementById('tasksCount').textContent = taskCount;
+            document.getElementById('faqCount').textContent = faqCount;
+            document.getElementById('guidesCount').textContent = '1';
+            
+            // Generate formatted content
+            document.getElementById('tasksOutput').innerHTML = formatMarkdown(data.tasks);
+            document.getElementById('faqOutput').innerHTML = formatMarkdown(data.faq);
+            document.getElementById('quickstartOutput').innerHTML = formatMarkdown(data.quickstart);
+        }
+
+        function formatMarkdown(markdown) {
+            return markdown
+                .replace(/### (.*)/g, '<h3>$1</h3>')
+                .replace(/## (.*)/g, '<h2>$1</h2>')
+                .replace(/# (.*)/g, '<h1>$1</h1>')
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/\`\`\`(\w+)?\n([\s\S]*?)\`\`\`/g, '<pre><code class="language-$1">$2</code></pre>')
+                .replace(/\`([^`]+)\`/g, '<code>$1</code>')
+                .replace(/^- (.*)/gm, '<li>$1</li>')
+                .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
+                .replace(/^(\d+)\. (.*)/gm, '<li>$1. $2</li>')
+                .replace(/\n\n/g, '</p><p>')
+                .replace(/^(?!<[h|u|p|l])/gm, '<p>')
+                .replace(/(?<!>)$/gm, '</p>')
+                .replace(/<p><\/p>/g, '')
+                .replace(/\[ \]/g, '<input type="checkbox" disabled>')
+                .replace(/\[x\]/g, '<input type="checkbox" checked disabled>');
+        }
+
+        // Mobile menu functionality
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('show');
+        }
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const menu = document.getElementById('mobileMenu');
+            const menuBtn = document.querySelector('.mobile-menu-btn');
+            
+            if (!menu.contains(event.target) && !menuBtn.contains(event.target)) {
+                menu.classList.remove('show');
+            }
+        });
+
+        // Smooth scrolling for navigation links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
-                });
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
             });
+        });
+
+        // Initialize syntax highlighting when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof Prism !== 'undefined') {
+                Prism.highlightAll();
+            }
         });
     </script>
 </body>
