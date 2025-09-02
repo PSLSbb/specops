@@ -333,120 +333,289 @@ async function mockGenerateDocuments(analysis) {
     // Mock document generation
     const repoName = analysis.description.split(':')[1] || 'Repository';
     
-    const tasks = `# Onboarding Tasks
+    const tasks = `# Onboarding Tasks for ${repoName}
 
-## Task 1: Set up development environment
+Welcome to the ${repoName} project! These tasks will help you get up and running quickly and understand the codebase.
 
-**Description:** Install required dependencies and configure the development environment for ${repoName}.
+## Task 1: Environment Setup 🚀
+
+**Description:** Set up your local development environment and get the project running on your machine.
 
 **Prerequisites:**
-- Git installed
-- Node.js (if applicable)
+- Git installed on your system
+- Node.js (version 14 or higher) or Python 3.8+
 - Code editor (VS Code recommended)
+- Terminal/command line access
 
 **Acceptance Criteria:**
-- [ ] Repository cloned locally
-- [ ] Dependencies installed successfully
-- [ ] Development server runs without errors
-- [ ] Basic tests pass
+- [ ] Repository cloned to your local machine
+- [ ] All dependencies installed successfully
+- [ ] Development server starts without errors
+- [ ] Basic tests pass (if applicable)
+- [ ] Environment variables configured
 
-**Estimated Time:** 30 minutes
+**Estimated Time:** 30-45 minutes
 **Difficulty:** beginner
+
+**Helpful Commands:**
+\`\`\`bash
+git clone ${analysis.url || 'https://github.com/example/repo.git'}
+cd ${repoName.toLowerCase().replace(/\s+/g, '-')}
+npm install  # or pip install -r requirements.txt
+npm start    # or python main.py
+\`\`\`
 
 ---
 
-## Task 2: Understand project structure
+## Task 2: Code Exploration 🔍
 
-**Description:** Explore the codebase and understand the main components and architecture.
+**Description:** Explore the codebase structure and understand the main components, architecture patterns, and key files.
 
 **Prerequisites:**
-- Development environment set up
+- Development environment set up successfully
 - Basic familiarity with the technology stack
+- Project running locally
 
 **Acceptance Criteria:**
 - [ ] Main directories and their purposes identified
-- [ ] Key configuration files understood
+- [ ] Key configuration files understood (package.json, config files)
 - [ ] Entry points and main modules located
-- [ ] Documentation read and understood
+- [ ] Core business logic components identified
+- [ ] Documentation and README files reviewed
+- [ ] Test structure understood
 
-**Estimated Time:** 45 minutes
+**Estimated Time:** 45-60 minutes
 **Difficulty:** intermediate
+
+**Key Areas to Explore:**
+- Main source code directory
+- Configuration files
+- Test directories
+- Documentation
+- Build/deployment scripts
 
 ---
 
-## Task 3: Make your first contribution
+## Task 3: First Contribution 🎯
 
-**Description:** Make a small, meaningful contribution to the project to understand the development workflow.
+**Description:** Make your first meaningful contribution to understand the development workflow and coding standards.
 
 **Prerequisites:**
 - Project structure understood
 - Development environment working
 - Contributing guidelines read
+- Issue or improvement area identified
 
 **Acceptance Criteria:**
-- [ ] Issue or improvement identified
-- [ ] Changes implemented following project conventions
+- [ ] Good first issue identified or small improvement planned
+- [ ] Feature branch created following naming conventions
+- [ ] Changes implemented following project coding standards
 - [ ] Tests added or updated as needed
-- [ ] Pull request created with proper description
+- [ ] Code reviewed and formatted properly
+- [ ] Pull request created with clear description
+- [ ] CI/CD checks passing
 
-**Estimated Time:** 60 minutes
-**Difficulty:** intermediate`;
+**Estimated Time:** 1-2 hours
+**Difficulty:** intermediate
+
+**Workflow Steps:**
+1. Create feature branch: \`git checkout -b feature/your-feature-name\`
+2. Make your changes
+3. Run tests: \`npm test\` or equivalent
+4. Commit changes: \`git commit -m "feat: your descriptive message"\`
+5. Push and create PR
+
+---
+
+## Task 4: Advanced Understanding 🧠
+
+**Description:** Dive deeper into advanced concepts and contribute to more complex features.
+
+**Prerequisites:**
+- First contribution completed successfully
+- Good understanding of project architecture
+- Familiarity with team workflows
+
+**Acceptance Criteria:**
+- [ ] Advanced features or patterns understood
+- [ ] Performance considerations identified
+- [ ] Security best practices applied
+- [ ] Documentation updated where needed
+- [ ] Code review process participated in
+
+**Estimated Time:** 2-3 hours
+**Difficulty:** advanced
+
+**Focus Areas:**
+- Performance optimization
+- Security considerations  
+- Advanced testing strategies
+- Documentation improvements`;
 
     const faq = `# Frequently Asked Questions
 
-## Getting Started
+## 🚀 Getting Started
 
 ### What is ${repoName}?
 
-${analysis.description}. This project provides a comprehensive solution for developers looking to build modern applications.
+${analysis.description}. This project provides a comprehensive solution for developers looking to build modern, scalable applications with best practices built in.
 
-### How do I get started?
+### How do I get started quickly?
 
-1. Clone the repository
-2. Install dependencies
-3. Follow the setup instructions in the README
-4. Run the development server
-5. Start exploring the codebase
+The fastest way to get started:
+
+1. **Clone the repository**: \`git clone ${analysis.url || 'https://github.com/example/repo.git'}\`
+2. **Install dependencies**: \`npm install\` or \`pip install -r requirements.txt\`
+3. **Start development server**: \`npm start\` or \`python main.py\`
+4. **Open your browser**: Navigate to \`http://localhost:3000\` (or shown port)
+5. **Start exploring**: Check out the examples and documentation
 
 ### What are the system requirements?
 
-- Operating System: Windows, macOS, or Linux
-- Memory: At least 4GB RAM recommended
-- Storage: 1GB free space
-- Network: Internet connection for downloading dependencies
+**Minimum Requirements:**
+- **OS**: Windows 10, macOS 10.14, or Linux (Ubuntu 18.04+)
+- **Memory**: 4GB RAM (8GB recommended)
+- **Storage**: 2GB free space
+- **Network**: Stable internet connection for dependencies
 
-## Development
+**Development Tools:**
+- Git 2.20+
+- Node.js 14+ (if JavaScript/TypeScript project)
+- Python 3.8+ (if Python project)
+- Code editor (VS Code recommended)
+
+### Is this project beginner-friendly?
+
+Absolutely! We've designed the onboarding process to be accessible to developers of all levels:
+- **Beginners**: Start with our guided tasks and comprehensive documentation
+- **Intermediate**: Jump into feature development with our contribution guidelines
+- **Advanced**: Explore architecture decisions and contribute to core features
+
+## 💻 Development
 
 ### How do I run tests?
 
-Tests can be run using the standard testing framework. Check the package.json or Makefile for specific commands.
+**For JavaScript/Node.js projects:**
+\`\`\`bash
+npm test              # Run all tests
+npm run test:watch    # Run tests in watch mode
+npm run test:coverage # Run with coverage report
+\`\`\`
+
+**For Python projects:**
+\`\`\`bash
+pytest                # Run all tests
+pytest --cov         # Run with coverage
+pytest -v            # Verbose output
+\`\`\`
+
+### What's the development workflow?
+
+1. **Create a branch**: \`git checkout -b feature/your-feature\`
+2. **Make changes**: Follow our coding standards
+3. **Test locally**: Run tests and linting
+4. **Commit**: Use conventional commit messages
+5. **Push & PR**: Create a pull request with description
+6. **Review**: Address feedback from maintainers
+7. **Merge**: Celebrate your contribution! 🎉
 
 ### How do I contribute?
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
+We welcome contributions! Here's how:
+
+**First-time contributors:**
+- Look for issues labeled "good first issue"
+- Read our CONTRIBUTING.md guide
+- Join our community discussions
+
+**Regular contributors:**
+- Pick up issues that match your expertise
+- Propose new features via GitHub issues
+- Help review other contributors' PRs
 
 ### What coding standards should I follow?
 
-Follow the existing code style in the project. Most projects include linting rules and formatting configurations.
+We maintain consistent code quality through:
+- **Linting**: ESLint/Pylint configurations included
+- **Formatting**: Prettier/Black for automatic formatting
+- **Testing**: Comprehensive test coverage required
+- **Documentation**: Clear comments and README updates
+- **Commits**: Conventional commit message format
 
-## Troubleshooting
+## 🔧 Troubleshooting
 
-### Common setup issues
+### Common Setup Issues
 
-- **Dependencies not installing**: Try clearing cache and reinstalling
-- **Tests failing**: Ensure all dependencies are installed and environment is set up correctly
-- **Build errors**: Check that you're using the correct version of required tools
+**"Dependencies won't install"**
+- Clear your package cache: \`npm cache clean --force\` or \`pip cache purge\`
+- Delete node_modules/venv and reinstall
+- Check your Node.js/Python version compatibility
+
+**"Tests are failing"**
+- Ensure all dependencies are installed
+- Check environment variables are set correctly
+- Run tests individually to isolate issues: \`npm test -- --testNamePattern="specific test"\`
+
+**"Build/compilation errors"**
+- Verify you're using the correct runtime version
+- Check for missing environment variables
+- Review recent changes that might have introduced issues
+
+**"Port already in use"**
+- Kill processes using the port: \`lsof -ti:3000 | xargs kill\` (macOS/Linux)
+- Use a different port: \`PORT=3001 npm start\`
+- Check for other running development servers
+
+### Performance Issues
+
+**"Application is slow"**
+- Check your system meets minimum requirements
+- Monitor memory usage during development
+- Use development tools for profiling
+- Consider using production builds for testing
 
 ### Where can I get help?
 
-- Check the project's issue tracker
-- Read the documentation
-- Join the community discussions
-- Contact the maintainers`;
+**Community Support:**
+- 💬 [GitHub Discussions](./discussions) - General questions and ideas
+- 🐛 [Issue Tracker](./issues) - Bug reports and feature requests
+- 📖 [Documentation](./docs) - Comprehensive guides and API reference
+- 💡 [Stack Overflow](https://stackoverflow.com/questions/tagged/${repoName.toLowerCase()}) - Technical questions
+
+**Direct Contact:**
+- 📧 Email maintainers for security issues
+- 🐦 Follow us on social media for updates
+- 🤝 Join our community chat/Discord
+
+**Response Times:**
+- Issues: Usually within 24-48 hours
+- Pull requests: Within 1 week
+- Security issues: Within 24 hours
+
+## 🎯 Advanced Topics
+
+### How do I deploy this project?
+
+Deployment options vary by project type. Common approaches:
+- **Static sites**: GitHub Pages, Netlify, Vercel
+- **Web applications**: Heroku, AWS, Google Cloud
+- **Containers**: Docker with Kubernetes or cloud container services
+
+### Can I use this in production?
+
+Yes! This project is production-ready with:
+- Comprehensive testing
+- Security best practices
+- Performance optimizations
+- Monitoring and logging support
+
+### How do I customize for my needs?
+
+The project is designed to be flexible:
+- Configuration files for easy customization
+- Plugin/extension system (if applicable)
+- Clear separation of concerns for modifications
+- Detailed architecture documentation`;
 
     const quickstart = `# Quick Start Guide
 
@@ -554,10 +723,15 @@ function displayResults(analysis, documents) {
         </div>
     `;
     
-    // Update document content
-    document.getElementById('tasksMarkdown').textContent = documents.tasks;
-    document.getElementById('faqMarkdown').textContent = documents.faq;
-    document.getElementById('quickstartMarkdown').textContent = documents.quickstart;
+    // Update document content with enhanced formatting
+    document.getElementById('tasksMarkdown').innerHTML = formatTasksContent(documents.tasks);
+    document.getElementById('faqMarkdown').innerHTML = formatMarkdownContent(documents.faq);
+    document.getElementById('quickstartMarkdown').innerHTML = formatMarkdownContent(documents.quickstart);
+    
+    // Apply syntax highlighting
+    if (typeof Prism !== 'undefined') {
+        Prism.highlightAll();
+    }
     
     // Show results with animation
     const results = document.getElementById('results');
@@ -569,6 +743,149 @@ function displayResults(analysis, documents) {
     
     // Scroll to results
     results.scrollIntoView({ behavior: 'smooth' });
+}
+
+// Content formatting functions
+function formatMarkdownContent(content) {
+    if (typeof marked !== 'undefined') {
+        // Configure marked for better rendering
+        marked.setOptions({
+            breaks: true,
+            gfm: true,
+            highlight: function(code, lang) {
+                if (typeof Prism !== 'undefined' && Prism.languages[lang]) {
+                    return Prism.highlight(code, Prism.languages[lang], lang);
+                }
+                return code;
+            }
+        });
+        return marked.parse(content);
+    }
+    
+    // Fallback: basic markdown-like formatting
+    return content
+        .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+        .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+        .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/`([^`]+)`/g, '<code>$1</code>')
+        .replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre><code class="language-$1">$2</code></pre>')
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/^(.+)$/gm, '<p>$1</p>')
+        .replace(/<p><\/p>/g, '')
+        .replace(/^---$/gm, '<hr>');
+}
+
+function formatTasksContent(content) {
+    // Enhanced formatting specifically for tasks
+    let formatted = formatMarkdownContent(content);
+    
+    // Add task card styling
+    formatted = formatted.replace(
+        /(<h2>.*?<\/h2>)([\s\S]*?)(?=<h2>|$)/g,
+        function(match, title, body) {
+            // Extract task metadata
+            const difficultyMatch = body.match(/\*\*Difficulty:\*\*\s*(\w+)/);
+            const timeMatch = body.match(/\*\*Estimated Time:\*\*\s*([^<]+)/);
+            
+            let difficulty = difficultyMatch ? difficultyMatch[1] : 'intermediate';
+            let time = timeMatch ? timeMatch[1].trim() : 'Unknown';
+            
+            // Create task card
+            return `
+                <div class="task-card">
+                    <div class="task-header">
+                        ${title}
+                        <div class="task-meta">
+                            <span class="badge badge-${difficulty}">${difficulty}</span>
+                            <span class="text-gray-600">⏱️ ${time}</span>
+                        </div>
+                    </div>
+                    ${body}
+                </div>
+            `;
+        }
+    );
+    
+    // Format checklists
+    formatted = formatted.replace(
+        /<ul>([\s\S]*?)<\/ul>/g,
+        function(match, content) {
+            if (content.includes('[ ]')) {
+                return '<ul class="checklist">' + content + '</ul>';
+            }
+            return match;
+        }
+    );
+    
+    // Format checkbox items
+    formatted = formatted.replace(/- \[ \]/g, '<li>');
+    formatted = formatted.replace(/- \[x\]/g, '<li class="completed">');
+    
+    return formatted;
+}
+
+function copyToClipboard(text) {
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(() => {
+            // Show success feedback
+            showNotification('Copied to clipboard!', 'success');
+        }).catch(() => {
+            fallbackCopyToClipboard(text);
+        });
+    } else {
+        fallbackCopyToClipboard(text);
+    }
+}
+
+function fallbackCopyToClipboard(text) {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    textArea.style.top = '-999999px';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    
+    try {
+        document.execCommand('copy');
+        showNotification('Copied to clipboard!', 'success');
+    } catch (err) {
+        showNotification('Failed to copy to clipboard', 'error');
+    }
+    
+    document.body.removeChild(textArea);
+}
+
+function showNotification(message, type = 'info') {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 px-4 py-2 rounded-lg text-white z-50 transition-all duration-300 ${
+        type === 'success' ? 'bg-green-500' : 
+        type === 'error' ? 'bg-red-500' : 'bg-blue-500'
+    }`;
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    // Animate in
+    setTimeout(() => {
+        notification.style.transform = 'translateX(0)';
+        notification.style.opacity = '1';
+    }, 100);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        notification.style.transform = 'translateX(100%)';
+        notification.style.opacity = '0';
+        setTimeout(() => {
+            if (notification.parentNode) {
+                document.body.removeChild(notification);
+            }
+        }, 300);
+    }, 3000);
 }
 
 // Initialize the app

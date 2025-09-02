@@ -6,6 +6,8 @@
     <title>SpecOps - AI-Powered Onboarding Factory</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
     <style>
         .gradient-bg {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -35,6 +37,158 @@
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Enhanced content formatting */
+        .content-display {
+            line-height: 1.6;
+            color: #374151;
+        }
+        
+        .content-display h1 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 0.5rem;
+        }
+        
+        .content-display h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #374151;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .content-display h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #4b5563;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .content-display p {
+            margin-bottom: 1rem;
+        }
+        
+        .content-display ul, .content-display ol {
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+        }
+        
+        .content-display li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .content-display code {
+            background-color: #f3f4f6;
+            padding: 0.125rem 0.25rem;
+            border-radius: 0.25rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            color: #dc2626;
+        }
+        
+        .content-display pre {
+            background-color: #1f2937;
+            color: #f9fafb;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            margin-bottom: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+        }
+        
+        .content-display pre code {
+            background: none;
+            padding: 0;
+            color: inherit;
+        }
+        
+        .content-display blockquote {
+            border-left: 4px solid #3b82f6;
+            padding-left: 1rem;
+            margin: 1rem 0;
+            font-style: italic;
+            color: #6b7280;
+        }
+        
+        .content-display hr {
+            border: none;
+            border-top: 1px solid #e5e7eb;
+            margin: 2rem 0;
+        }
+        
+        .content-display strong {
+            font-weight: 600;
+            color: #1f2937;
+        }
+        
+        .content-display .task-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .content-display .task-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .content-display .task-meta {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            font-size: 0.875rem;
+        }
+        
+        .content-display .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .content-display .badge-beginner {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+        
+        .content-display .badge-intermediate {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+        
+        .content-display .badge-advanced {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .content-display .checklist {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .content-display .checklist li {
+            position: relative;
+            padding-left: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .content-display .checklist li:before {
+            content: '☐';
+            position: absolute;
+            left: 0;
+            color: #6b7280;
         }
     </style>
 </head>
@@ -263,29 +417,44 @@
                             <div id="tasksContent" class="tab-content">
                                 <div class="flex justify-between items-center mb-4">
                                     <h4 class="text-lg font-semibold">Onboarding Tasks</h4>
-                                    <button onclick="downloadContent('tasks')" class="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded transition-colors">
-                                        <i class="fas fa-download mr-1"></i>Download
-                                    </button>
+                                    <div class="flex gap-2">
+                                        <button onclick="copyToClipboard(generatedContent.tasks)" class="text-sm bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-1 rounded transition-colors">
+                                            <i class="fas fa-copy mr-1"></i>Copy
+                                        </button>
+                                        <button onclick="downloadContent('tasks')" class="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded transition-colors">
+                                            <i class="fas fa-download mr-1"></i>Download
+                                        </button>
+                                    </div>
                                 </div>
-                                <div id="tasksMarkdown" class="bg-gray-50 p-4 rounded-lg font-mono text-sm overflow-auto max-h-96"></div>
+                                <div id="tasksMarkdown" class="content-display bg-white border border-gray-200 p-6 rounded-lg overflow-auto max-h-96"></div>
                             </div>
                             <div id="faqContent" class="tab-content hidden">
                                 <div class="flex justify-between items-center mb-4">
                                     <h4 class="text-lg font-semibold">FAQ</h4>
-                                    <button onclick="downloadContent('faq')" class="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded transition-colors">
-                                        <i class="fas fa-download mr-1"></i>Download
-                                    </button>
+                                    <div class="flex gap-2">
+                                        <button onclick="copyToClipboard(generatedContent.faq)" class="text-sm bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-1 rounded transition-colors">
+                                            <i class="fas fa-copy mr-1"></i>Copy
+                                        </button>
+                                        <button onclick="downloadContent('faq')" class="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded transition-colors">
+                                            <i class="fas fa-download mr-1"></i>Download
+                                        </button>
+                                    </div>
                                 </div>
-                                <div id="faqMarkdown" class="bg-gray-50 p-4 rounded-lg font-mono text-sm overflow-auto max-h-96"></div>
+                                <div id="faqMarkdown" class="content-display bg-white border border-gray-200 p-6 rounded-lg overflow-auto max-h-96"></div>
                             </div>
                             <div id="quickstartContent" class="tab-content hidden">
                                 <div class="flex justify-between items-center mb-4">
                                     <h4 class="text-lg font-semibold">Quick Start Guide</h4>
-                                    <button onclick="downloadContent('quickstart')" class="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded transition-colors">
-                                        <i class="fas fa-download mr-1"></i>Download
-                                    </button>
+                                    <div class="flex gap-2">
+                                        <button onclick="copyToClipboard(generatedContent.quickstart)" class="text-sm bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-1 rounded transition-colors">
+                                            <i class="fas fa-copy mr-1"></i>Copy
+                                        </button>
+                                        <button onclick="downloadContent('quickstart')" class="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded transition-colors">
+                                            <i class="fas fa-download mr-1"></i>Download
+                                        </button>
+                                    </div>
                                 </div>
-                                <div id="quickstartMarkdown" class="bg-gray-50 p-4 rounded-lg font-mono text-sm overflow-auto max-h-96"></div>
+                                <div id="quickstartMarkdown" class="content-display bg-white border border-gray-200 p-6 rounded-lg overflow-auto max-h-96"></div>
                             </div>
                         </div>
                     </div>
@@ -331,6 +500,9 @@
         </div>
     </footer>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
